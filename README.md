@@ -1,5 +1,6 @@
-# MadESI
-A small tool to view market history / transactions out of game. Will add more functionalities soon.
+# LOCKR
+
+Tool for industry things. Will add more features later
 
 ## Requirements
 * Python dependencies

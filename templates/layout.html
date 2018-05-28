@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title> LOCKR | {{ title }}</title>
+
+	<meta charset="utf-8">
+	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">	
+
+	<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+	<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/ionicons.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/AdminLTE.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/_all-skins.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/alertify.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/highcharts.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+
+	<!-- <script src="{{ url_for('static', filename='js/vendor/jquery.min.js') }}"></script> -->
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="{{ url_for('static', filename='js/vendor/bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/alertify.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/dataTables.bootstrap.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/moment.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/datatable.moment.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/adminlte.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/highcharts.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/vendor/jquery-ui.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
+</head>
+
+<body class="skin-green sidebar-mini {% if session.token is not defined %} sidebar-collapse {% endif %}">
+	<div class="wrapper">
+		<header class="main-header">
+			<a href="/" class="logo">
+				<span class="logo-mini"><b>L</b>KR</span>
+				<span class="logo-lg"><b>L</b>OCKR</span>
+			</a>
+
+			{% if session.token%}
+			<nav class="navbar navbar-static-top">
+				<a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+					<span class="sr-only">Toggle Navigation</span>
+				</a>
+
+				<div class="navbar-custom-menu">
+					<ul class="nav navbar-nav">
+						<li>
+							<a class="logoutButton" href="{{ url_for('page_routes.logout') }}">Logout</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+			{% endif %}
+		</header>
+		<aside class="main-sidebar">
+			<section class="sidebar">
+				<div class="user-panel">
+					{% if session.token %}
+						<div class="pull-left image">
+								<img class="img-circle" src="https://image.eveonline.com/Character/{{session.char.CharacterID}}_64.jpg">
+						</div>
+						<div class="pull-right info">
+							<p>{{ session.char.CharacterName }}</p>
+							<i class="fa fa-circle text-success"></i>{{ session.curLoc }}
+						</div>
+					{% else %}
+						<div class="pull-left image">
+								<img class="img-circle" src="{{ url_for('static', filename='img/LogoFull.png') }}">
+						</div>
+					{% endif %}
+				</div>
+				<ul class="sidebar-menu">
+					{% if session.token %}
+						<li class="header">MAIN NAVIGATION</li>
+						{% for href, id, logo, caption, hasAdmin in navigation_bar %}
+							{% if hasAdmin and session.isAdmin %}
+								<li>
+									<a href="{{ href|e }}">
+										<i class="{{ logo|e }}"></i> <span>{{ caption|e }}</span>
+									</a>
+								</li>
+							{% elif not hasAdmin %}
+								<li>
+									<a href="{{ href|e }}">
+										<i class="{{ logo|e }}"></i> <span>{{ caption|e }}</span>
+									</a>
+								</li>
+							{% endif %}
+						{% endfor %}
+					{% endif %}
+				</ul>
+			</section>
+		</aside>
+		<div class="content-wrapper">{{ active_page }}
+            {% block body %}{% endblock %}
+        </div>
+
+        {% if notification %}
+        <script>
+        	alertify.{{notification.type}}("{{ notification.message }}");
+        </script>
+        {% endif %}
+
+        <footer class="main-footer">
+        	<div class="pull-right hidden-xs">
+        		<b>Version</b> 1.1.0
+        	</div>
+        	<strong>
+        		<a href="https://esi.madpilot.nl" target="_blank">Mad ESI</a>
+        	</strong>
+        </footer>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+server: {
+  "ip": "0.0.0.0",
+  "port": 33333,
+  "debug": True,
+  "appKey": "",
+  "ssl": False,
+  "ssl_key": "",
+  "ssl_cert": ""
+}
+mysql: {
+  "host": "127.0.0.1",
+  "user": "",
+  "pass": "",
+  "port": 3306,
+  "db": "LOCKR"
+}
+settings: {
+  "historyURL": "https://esi.tech.ccp.is/latest/markets/10000002/history/?datasource=tranquility&type_id=",
+  "marketURL": "https://api.evemarketer.com/ec/marketstat/json?regionlimit=10000002",
+  "esiScopes": ["publicData","esi-location.read_location.v1","esi-wallet.read_character_wallet.v1","esi-wallet.read_corporation_wallet.v1","esi-search.search_structures.v1","esi-universe.read_structures.v1","esi-corporations.read_corporation_membership.v1","esi-assets.read_assets.v1","esi-markets.structure_markets.v1","esi-corporations.read_structures.v1","esi-industry.read_character_jobs.v1","esi-characters.read_corporation_roles.v1","esi-location.read_online.v1","esi-contracts.read_character_contracts.v1","esi-corporations.track_members.v1","esi-wallet.read_corporation_wallets.v1","esi-corporations.read_divisions.v1","esi-assets.read_corporation_assets.v1","esi-corporations.read_titles.v1","esi-contracts.read_corporation_contracts.v1","esi-corporations.read_starbases.v1","esi-industry.read_corporation_jobs.v1","esi-markets.read_corporation_orders.v1","esi-corporations.read_container_logs.v1","esi-industry.read_character_mining.v1","esi-industry.read_corporation_mining.v1","esi-planets.read_customs_offices.v1","esi-corporations.read_facilities.v1","esi-characters.read_titles.v1"],
+  "esiURL": "https://esi.tech.ccp.is/latest/swagger.json?datasource=tranquility",
+  "esiCallback": "http://localhost:33333/oauth",
+  "esiClientID": "",
+  "esiSecretKey": "",
+  "esiCustomHeader": "Contact ingame: ",
+  "admins": []
+}

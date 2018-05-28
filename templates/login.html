@@ -1,0 +1,18 @@
+{% extends 'layout.html' %} 
+{% block body %}
+<section class="content">
+	<div class="container login-container">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3">
+				<img src="{{ url_for('static', filename='img/LogoFull.png') }}" width=400px>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-md-offset-3 loginform">
+				<h2>Login</h2>
+				<a href="{{secure_uri}}"><img src='https://images.contentful.com/idjq7aai9ylm/4fSjj56uD6CYwYyus4KmES/4f6385c91e6de56274d99496e6adebab/EVE_SSO_Login_Buttons_Large_Black.png?w=270&h=45'></a>
+			</div>
+		</div>
+	</div>
+</section>
+{% endblock %}
