@@ -52,7 +52,13 @@ class ESI:
 	def getESIInfo(self, endpoint, obj):
 		info = self.esi_app.op[endpoint](**obj)
 		res = self.client.request(info)
-		return res.data
+		result = res.data
+		try:
+			if "response" in result:
+				result = result["response"]
+		except:
+			pass
+		return result
 
 	def subToken(self, refresh_token):
 		self.security.update_token({
