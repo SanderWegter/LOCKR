@@ -27,6 +27,8 @@ class Users:
 		]
 
 	def isLoggedIn(self):
+		if "token" in session:
+			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
 		return "token" in session
 
 	def getAuthURI(self):
@@ -81,7 +83,7 @@ class Users:
 			return False
 		session["isAdmin"] = False
 		if "char" in session:
-			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW() WHERE charID = %s",[request.remote_addr,session["char"]["CharacterID"]])
+			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
 			if session["char"]["CharacterID"] in self.admins:
 				session["isAdmin"] = True
 		return self.esi.isVerified(session["token"])
@@ -258,3 +260,23 @@ class Users:
 				else:
 					itemTranslations[s] = "Unknown - No permissions"
 		return {"jobs":industry, "translations": itemTranslations}
+
+	def getCorpAssets(self):
+		assets = {}
+		corpID = self.getCorpID()
+		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+		for r in cur.fetchall():
+			print(r)
+			charID,refreshToken = r
+			self.esi.subToken(refreshToken)
+			t = self.esi.getForceRefresh()
+			cur = self.db.query("UPDATE users SET refreshToken = %s WHERE charID = %s",[refreshToken,charID])
+			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+			baseroles = roles["roles"]
+			print(baseroles)
+			if "Director" in roles:
+				assets = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
+				print(assets)
+		
+		
+		return {"assets": assets}
