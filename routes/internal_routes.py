@@ -44,3 +44,9 @@ def getSysID():
 @requires_auth
 def getIndustryJobs():
 	return json.dumps(users.getIndustryJobs())
+
+@internal_routes.route("/internal/industry/getCorpAssets")
+@requires_auth
+def getCorpAssets():
+	return json.dumps(users.getCorpAssets())
+
