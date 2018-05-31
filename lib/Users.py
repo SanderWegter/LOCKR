@@ -262,7 +262,7 @@ class Users:
 		return {"jobs":industry, "translations": itemTranslations}
 
 	def getCorpAssets(self):
-		assets = {}
+		assets = []
 		citadels = set()
 		itemList = set()
 		corpID = self.getCorpID()
