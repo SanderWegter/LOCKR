@@ -285,8 +285,7 @@ class Users:
 					hasMorePages = True
 					while hasMorePages:
 						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
-						print(len(assetList))
-						if len(assetList) < 5:
+						if len(assetList) == 0:
 							hasMorePages = False
 							continue
 						for asset in assetList:
@@ -311,4 +310,6 @@ class Users:
 						itemTranslations[s] = citadelInfo["name"]
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
+		self.corpAssets = assets
+		self.itemTranslations = itemTranslations				
 		return {"assets": assets, "translations": itemTranslations}
