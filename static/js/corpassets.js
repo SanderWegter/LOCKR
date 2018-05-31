@@ -18,20 +18,21 @@ function getCorpAssets(){
 					<td>"+v.location_flag+"<br>"+v.location_type+"<br>"+v.is_singleton+"</td>\
 				</tr>\
 				")
-			$("#assetsTable").DataTable({
-        		'paging': true,
-        		'pageLength': 25,
-	            'lengthChange': true,
-	            'searching': true,
-	            // 'ordering': true,
-	            // 'order': [[ 4, "desc" ]],
-	            'info': true,
-	            'autoWidth': true,
-	            'language': {
-	                'search': "_INPUT_",
-	                'searchPlaceholder': "Search..."
-	            }
+
         	})
+			$("#assetsTable").DataTable({
+            'paging': true,
+            'pageLength': 25,
+            'lengthChange': true,
+            'searching': true,
+            // 'ordering': true,
+            // 'order': [[ 4, "desc" ]],
+            'info': true,
+            'autoWidth': true,
+            'language': {
+                'search': "_INPUT_",
+                'searchPlaceholder': "Search..."
+            }
 		})
 	})
 }
