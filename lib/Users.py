@@ -263,6 +263,8 @@ class Users:
 
 	def getCorpAssets(self):
 		assets = {}
+		citadels = set()
+		itemList = set()
 		corpID = self.getCorpID()
 		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 		for r in cur.fetchall():
@@ -275,8 +277,26 @@ class Users:
 			baseroles = roles["roles"]
 			print(baseroles)
 			if "Director" in baseroles:
-				assets = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
+				assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
+				for asset in assetList["assets"]:
+					if asset["location_id"] < 69999999:
+						itemList.add(asset["location_id"])
+					else:
+						citadels.add(asset["location_id"])
+					itemList.add(asset["type_id"])
+					assets.append(asset)
 				print(assets)
 		
-		
-		return {"assets": assets}
+		itemTranslations = {}
+		if len(itemList) > 0:
+			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
+			for i in itemTranslation:
+				itemTranslations[i['id']] = i["name"]
+		if len(citadels)>0:
+			for s in citadels:
+				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+				if "name" in citadelInfo:
+					itemTranslations[s] = citadelInfo["name"]
+				else:
+					itemTranslations[s] = "Unknown - No permissions"
+		return {"assets": assets, "translations": itemTranslations}
