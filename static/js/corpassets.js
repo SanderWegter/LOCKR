@@ -14,6 +14,19 @@ function getCorpAssets(){
 					<td>"+v.location_flag+"<br>"+v.location_type+"</td>\
 				</tr>\
 				")
+			$("#assetTable").DataTable({
+        		'paging': true,
+	            'lengthChange': true,
+	            'searching': true,
+	            // 'ordering': true,
+	            // 'order': [[ 4, "desc" ]],
+	            'info': true,
+	            'autoWidth': true,
+	            'language': {
+	                'search': "_INPUT_",
+	                'searchPlaceholder': "Search..."
+	            }
+        	})
 		})
 	})
 }
