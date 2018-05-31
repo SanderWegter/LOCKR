@@ -25,6 +25,9 @@ class Users:
 			"Invention",
 			"Reverse engineering"
 		]
+		self.corpCache = 0
+		self.corpAssets = []
+		self.itemTranslations = {}
 
 	def isLoggedIn(self):
 		if "token" in session:
@@ -262,38 +265,46 @@ class Users:
 		return {"jobs":industry, "translations": itemTranslations}
 
 	def getCorpAssets(self):
-		assets = []
-		citadels = set()
-		itemList = set()
-		corpID = self.getCorpID()
-		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
-		for r in cur.fetchall():
-			charID,refreshToken = r
-			self.esi.subToken(refreshToken)
-			t = self.esi.getForceRefresh()
-			cur = self.db.query("UPDATE users SET refreshToken = %s WHERE charID = %s",[refreshToken,charID])
-			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
-			baseroles = roles["roles"]
-			if "Director" in baseroles:
-				assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
-				for asset in assetList:
-					if asset["location_id"] < 69999999:
-						itemList.add(asset["location_id"])
+		assets = self.corpAssets
+		itemTranslations = self.itemTranslations
+		if int(time.time() - self.corpCache) > 3600:
+			self.corpCache = int(time.time())
+			citadels = set()
+			itemList = set()
+			corpID = self.getCorpID()
+			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+			for r in cur.fetchall():
+				charID,refreshToken = r
+				self.esi.subToken(refreshToken)
+				t = self.esi.getForceRefresh()
+				cur = self.db.query("UPDATE users SET refreshToken = %s WHERE charID = %s",[refreshToken,charID])
+				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+				baseroles = roles["roles"]
+				if "Director" in baseroles:
+					page = 1
+					hasMorePages = True
+					while hasMorePages or page < 20:
+						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
+						for asset in assetList:
+							if asset["location_id"] < 69999999:
+								itemList.add(asset["location_id"])
+							else:
+								citadels.add(asset["location_id"])
+							itemList.add(asset["type_id"])
+							assets.append(asset)
+						page += 1
+					continue
+			
+			itemTranslations = {}
+			if len(itemList) > 0:
+				itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
+				for i in itemTranslation:
+					itemTranslations[i['id']] = i["name"]
+			if len(citadels)>0:
+				for s in citadels:
+					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+					if "name" in citadelInfo:
+						itemTranslations[s] = citadelInfo["name"]
 					else:
-						citadels.add(asset["location_id"])
-					itemList.add(asset["type_id"])
-					assets.append(asset)
-		
-		itemTranslations = {}
-		if len(itemList) > 0:
-			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
-			for i in itemTranslation:
-				itemTranslations[i['id']] = i["name"]
-		if len(citadels)>0:
-			for s in citadels:
-				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
-				if "name" in citadelInfo:
-					itemTranslations[s] = citadelInfo["name"]
-				else:
-					itemTranslations[s] = "Unknown - No permissions"
+						itemTranslations[s] = "Unknown - No permissions"
 		return {"assets": assets, "translations": itemTranslations}
