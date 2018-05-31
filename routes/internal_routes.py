@@ -47,6 +47,7 @@ def getIndustryJobs():
 
 @internal_routes.route("/internal/industry/getCorpAssets")
 @requires_auth
+@requires_admin
 def getCorpAssets():
 	return json.dumps(users.getCorpAssets())
 
