@@ -274,7 +274,7 @@ class Users:
 			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 			baseroles = roles["roles"]
 			print(baseroles)
-			if "Director" in roles:
+			if "Director" in baseroles:
 				assets = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
 				print(assets)
 		
