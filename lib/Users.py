@@ -283,9 +283,12 @@ class Users:
 				if "Director" in baseroles:
 					page = 1
 					hasMorePages = True
-					while hasMorePages or page < 10:
+					while hasMorePages:
 						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
-						print(assetList)
+						print(len(assetList))
+						if len(assetList) < 5:
+							hasMorePages = False
+							continue
 						for asset in assetList:
 							if asset["location_id"] < 69999999:
 								itemList.add(asset["location_id"])
