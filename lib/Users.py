@@ -305,6 +305,7 @@ class Users:
 							itemL[iL].append(asset["item_id"])
 							if len(itemL[iL]) == 999:
 								iL += 1
+								itemL.append([])
 						page += 1
 					continue
 			
