@@ -307,8 +307,8 @@ class Users:
 							assets.append(asset)
 						page += 1
 					continue
-			print(officeFlags)
-			print(officeFlags[1027288316887])
+
+			nw = []
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -316,6 +316,8 @@ class Users:
 						itemList.add(a["location_id"])
 					else:
 						citadels.add(a["location_id"])
+					nw.append(a)
+			assets = nw
 
 			itemTranslations = {}
 			cur = self.db.query("SELECT idnum,name FROM itemLookup")
