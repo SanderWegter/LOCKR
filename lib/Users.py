@@ -288,6 +288,7 @@ class Users:
 					page = 1
 					hasMorePages = True
 					while hasMorePages:
+						divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
 						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
 						if len(assetList) == 0:
 							hasMorePages = False
@@ -306,9 +307,6 @@ class Users:
 								citadels.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
-
-					divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
-
 					continue
 			
 			for a in assets:
@@ -320,15 +318,32 @@ class Users:
 						citadels.add(a["location_id"])
 
 			itemTranslations = {}
+			formatList = ','.join(['%s']) * len(itemList)
+			cur = self.db.query("SELECT idnum FROM itemLookup WHERE idnum NOT IN (%s)" % formatList, tuple(itemList))
+			row = cur.fetchall()
+			for r in row:
+				try:
+					itemList.remove(r[0])
+				except:
+					pass
+				try:
+					citatels.remove(r[0])
+				except:
+					pass
+
 			if len(itemList) > 0:
-				itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
+				itemList = set(rList) - set(itemList)
+				if len(itemList) > 0:
+					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
 				for i in itemTranslation:
 					itemTranslations[i['id']] = i["name"]
+					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[i['id'],i['name']])
 			if len(citadels)>0:
 				for s in citadels:
 					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
 					if "name" in citadelInfo:
 						itemTranslations[s] = citadelInfo["name"]
+						cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[s,citadelInfo["name"]])
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
 		self.corpAssets = assets
