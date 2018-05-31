@@ -270,7 +270,8 @@ class Users:
 		itemTranslations = self.itemTranslations
 		itemLocs = self.itemLocs
 		officeFlags = {}
-		itemL = set()
+		itemL = [[]]
+		iL = 0
 		if int(time.time() - self.corpCache) > 3600:
 			self.corpCache = int(time.time())
 			citadels = set()
@@ -301,7 +302,9 @@ class Users:
 								officeFlags[asset["item_id"]] = asset["location_id"]
 							itemList.add(asset["type_id"])
 							assets.append(asset)
-							itemL.add(asset["item_id"])
+							itemL[iL].append(asset["item_id"])
+							if len(itemL[iL]) == 999:
+								iL += 1
 						page += 1
 					continue
 			
@@ -309,7 +312,9 @@ class Users:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
 
-			itemLocs = self.esi.getESIInfo('post_corporations_corporation_id_assets_locations',{"corporation_id": corpID, "item_ids": itemL})
+			itemLocs = set()
+			for i in itemL:
+				itemLocs.add(self.esi.getESIInfo('post_corporations_corporation_id_assets_locations',{"corporation_id": corpID, "item_ids": i}))
 
 			itemTranslations = {}
 			if len(itemList) > 0:
