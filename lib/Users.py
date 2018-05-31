@@ -278,7 +278,7 @@ class Users:
 			print(baseroles)
 			if "Director" in baseroles:
 				assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
-				for asset in assetList["assets"]:
+				for asset in assetList:
 					if asset["location_id"] < 69999999:
 						itemList.add(asset["location_id"])
 					else:
