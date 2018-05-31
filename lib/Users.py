@@ -28,7 +28,6 @@ class Users:
 		self.corpCache = 0
 		self.corpAssets = []
 		self.itemTranslations = {}
-		self.itemLocs = {}
 
 	def isLoggedIn(self):
 		if "token" in session:
@@ -268,7 +267,6 @@ class Users:
 	def getCorpAssets(self):
 		assets = self.corpAssets
 		itemTranslations = self.itemTranslations
-		itemLocs = self.itemLocs
 		officeFlags = {}
 		itemL = [[]]
 		iL = 0
@@ -298,26 +296,20 @@ class Users:
 							else:
 								citadels.add(asset["location_id"])
 
-							if asset["location_flag"] == "OfficeFolder":
+							if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
 								officeFlags[asset["item_id"]] = asset["location_id"]
 							itemList.add(asset["type_id"])
 							assets.append(asset)
-							itemL[iL].append(asset["item_id"])
-							if len(itemL[iL]) == 999:
-								iL += 1
-								itemL.append([])
 						page += 1
 					continue
 			
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
-
-			itemLocs = set()
-			for i in itemL:
-				grabLocs = self.esi.getESIInfo('post_corporations_corporation_id_assets_locations',{"corporation_id": corpID, "item_ids": i})
-				print(grabLocs)
-				itemLocs.add(grabLocs)
+					if a["location_id"] < 69999999:
+						itemList.add(asset["location_id"])
+					else:
+						citadels.add(asset["location_id"])
 
 			itemTranslations = {}
 			if len(itemList) > 0:
@@ -327,14 +319,10 @@ class Users:
 			if len(citadels)>0:
 				for s in citadels:
 					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
-					print(s)
-					print(citadelInfo)
-					print("-----------")
 					if "name" in citadelInfo:
 						itemTranslations[s] = citadelInfo["name"]
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
 		self.corpAssets = assets
-		self.itemTranslations = itemTranslations
-		self.itemLocs = itemLocs				
+		self.itemTranslations = itemTranslations			
 		return {"assets": assets, "translations": itemTranslations, "itemlocs": itemLocs}
