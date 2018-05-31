@@ -309,6 +309,8 @@ class Users:
 					continue
 
 			nw = []
+			print("beforeassets")
+			print(assets)
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -318,7 +320,8 @@ class Users:
 						citadels.add(a["location_id"])
 					nw.append(a)
 			assets = nw
-
+			print("afterassets")
+			print(assets)
 			itemTranslations = {}
 			cur = self.db.query("SELECT idnum,name FROM itemLookup")
 			row = cur.fetchall()
@@ -340,6 +343,7 @@ class Users:
 			print(row)
 			print("officeflags")
 			print(officeFlags)
+
 			if len(itemList) > 0:
 				if len(itemList) > 0:
 					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
