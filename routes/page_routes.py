@@ -53,6 +53,26 @@ def index():
 		ts=str(int(time()))
 		)
 
+@page_routes.route('/assets')
+@requires_auth
+@requires_admin
+def assets():
+	notification = {}
+	if "notification" in session:
+		notification = {
+			"message": session["notification"],
+			"type": session["notificationtype"]
+		}
+		session.pop("notification")
+		session.pop("notificationtype")
+	return render_template(
+		'corpassets.html',
+		title="Corp Assets",
+		notification=notification,
+		navigation_bar=navigation_bar,
+		ts=str(int(time()))
+		)
+
 @page_routes.route('/login', methods=["GET","POST"])
 def login():
 	notification = {}
