@@ -28,6 +28,7 @@ class Users:
 		self.corpCache = 0
 		self.corpAssets = []
 		self.itemTranslations = {}
+		self.divisions = []
 
 	def isLoggedIn(self):
 		if "token" in session:
@@ -267,6 +268,7 @@ class Users:
 	def getCorpAssets(self):
 		assets = self.corpAssets
 		itemTranslations = self.itemTranslations
+		divisions = self.divisions
 		officeFlags = {}
 		itemL = [[]]
 		iL = 0
@@ -304,6 +306,9 @@ class Users:
 								citadels.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
+
+					divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
+
 					continue
 			
 			for a in assets:
@@ -327,5 +332,6 @@ class Users:
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
 		self.corpAssets = assets
-		self.itemTranslations = itemTranslations			
-		return {"assets": assets, "translations": itemTranslations}
+		self.itemTranslations = itemTranslations
+		self.divisions = divisions			
+		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
