@@ -315,7 +315,9 @@ class Users:
 
 			itemLocs = set()
 			for i in itemL:
-				itemLocs.add(self.esi.getESIInfo('post_corporations_corporation_id_assets_locations',{"corporation_id": corpID, "item_ids": i}))
+				grabLocs = self.esi.getESIInfo('post_corporations_corporation_id_assets_locations',{"corporation_id": corpID, "item_ids": i})
+				print(grabLocs)
+				itemLocs.add(grabLocs)
 
 			itemTranslations = {}
 			if len(itemList) > 0:
