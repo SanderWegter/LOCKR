@@ -332,7 +332,14 @@ class Users:
 				except:
 					pass
 				itemTranslations[r[0]] = r[1]
-
+			print("itemlist")
+			print(itemList)
+			print("citadels")
+			print(citadels)
+			print("row")
+			print(row)
+			print("officeflags")
+			print(officeFlags)
 			if len(itemList) > 0:
 				if len(itemList) > 0:
 					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
