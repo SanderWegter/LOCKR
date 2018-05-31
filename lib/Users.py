@@ -276,6 +276,7 @@ class Users:
 			self.corpCache = int(time.time())
 			citadels = set()
 			itemList = set()
+			specialItems = set()
 			corpID = self.getCorpID()
 			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 			for r in cur.fetchall():
@@ -304,11 +305,11 @@ class Users:
 							if asset["type_id"] < 69999999:
 								itemList.add(asset["type_id"])
 							else:
-								citadels.add(asset["type_id"])
+								specialItems.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
 					continue
-			
+			print(specialItems)
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -326,7 +327,7 @@ class Users:
 				except:
 					pass
 				try:
-					citatels.remove(r[0])
+					citadels.remove(r[0])
 				except:
 					pass
 				itemTranslations[r[0]] = r[1]
