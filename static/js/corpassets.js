@@ -6,16 +6,21 @@ function getCorpAssets(){
 		console.log(assets)
 		console.log(translations)
 		$.each(assets, function(k,v){
+			bpc = ""
+			if(v.is_blueprint_copy){
+				bpc = "- BPC"
+			}
 			$(".assetsList").append("\
 				<tr>\
-					<td>"+translations[v.type_id]+"</td>\
+					<td><img src='https://image.eveonline.com/Type/"+v.type_id+"_32.png'><br>"+translations[v.type_id]+""+bpc+"</td>\
 					<td>"+translations[v.location_id]+"</td>\
 					<td>"+v.quantity+"</td>\
-					<td>"+v.location_flag+"<br>"+v.location_type+"</td>\
+					<td>"+v.location_flag+"<br>"+v.location_type+"<br>"+v.is_singleton+"</td>\
 				</tr>\
 				")
-			$("#assetTable").DataTable({
+			$("#assetsTable").DataTable({
         		'paging': true,
+        		'pageLength': 25,
 	            'lengthChange': true,
 	            'searching': true,
 	            // 'ordering': true,
