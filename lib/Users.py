@@ -268,14 +268,12 @@ class Users:
 		corpID = self.getCorpID()
 		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 		for r in cur.fetchall():
-			print(r)
 			charID,refreshToken = r
 			self.esi.subToken(refreshToken)
 			t = self.esi.getForceRefresh()
 			cur = self.db.query("UPDATE users SET refreshToken = %s WHERE charID = %s",[refreshToken,charID])
 			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 			baseroles = roles["roles"]
-			print(baseroles)
 			if "Director" in baseroles:
 				assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID})
 				for asset in assetList:
@@ -285,7 +283,6 @@ class Users:
 						citadels.add(asset["location_id"])
 					itemList.add(asset["type_id"])
 					assets.append(asset)
-				print(assets)
 		
 		itemTranslations = {}
 		if len(itemList) > 0:
