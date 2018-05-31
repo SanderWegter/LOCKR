@@ -267,6 +267,7 @@ class Users:
 	def getCorpAssets(self):
 		assets = self.corpAssets
 		itemTranslations = self.itemTranslations
+		officeFlags = {}
 		if int(time.time() - self.corpCache) > 3600:
 			self.corpCache = int(time.time())
 			citadels = set()
@@ -292,11 +293,18 @@ class Users:
 								itemList.add(asset["location_id"])
 							else:
 								citadels.add(asset["location_id"])
+
+							if asset["location_flag"] == "OfficeFolder":
+								officeFlags[asset["item_id"]] = asset["location_id"]
 							itemList.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
 					continue
 			
+			for a in assets:
+				if a["location_id"] in officeFlags:
+					a["location_id"] = officeFlags[a["location_id"]]
+
 			itemTranslations = {}
 			if len(itemList) > 0:
 				itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
