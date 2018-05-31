@@ -328,4 +328,4 @@ class Users:
 						itemTranslations[s] = "Unknown - No permissions"
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations			
-		return {"assets": assets, "translations": itemTranslations, "itemlocs": itemLocs}
+		return {"assets": assets, "translations": itemTranslations}
