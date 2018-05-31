@@ -277,7 +277,6 @@ class Users:
 				charID,refreshToken = r
 				self.esi.subToken(refreshToken)
 				t = self.esi.getForceRefresh()
-				cur = self.db.query("UPDATE users SET refreshToken = %s WHERE charID = %s",[refreshToken,charID])
 				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 				baseroles = roles["roles"]
 				if "Director" in baseroles:
@@ -306,6 +305,9 @@ class Users:
 			if len(citadels)>0:
 				for s in citadels:
 					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+					print(s)
+					print(citadelInfo)
+					print("-----------")
 					if "name" in citadelInfo:
 						itemTranslations[s] = citadelInfo["name"]
 					else:
