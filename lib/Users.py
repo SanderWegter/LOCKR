@@ -304,12 +304,11 @@ class Users:
 								officeFlags[asset["item_id"]] = asset["location_id"]
 							if asset["type_id"] < 69999999:
 								itemList.add(asset["type_id"])
-							else:
-								specialItems.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
 					continue
-			print(specialItems)
+			print(officeFlags)
+			print(officeFlags[1027288316887])
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
