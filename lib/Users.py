@@ -329,7 +329,7 @@ class Users:
 					citatels.remove(r[0])
 				except:
 					pass
-				itemTranslations[r[0],r[1]]
+				itemTranslations[r[0]] = r[1]
 
 			if len(itemList) > 0:
 				if len(itemList) > 0:
