@@ -318,8 +318,7 @@ class Users:
 						citadels.add(a["location_id"])
 
 			itemTranslations = {}
-			formatList = ','.join(['%s']) * len(itemList)
-			cur = self.db.query("SELECT idnum FROM itemLookup WHERE idnum NOT IN (%s)" % formatList, tuple(itemList))
+			cur = self.db.query("SELECT idnum,name FROM itemLookup")
 			row = cur.fetchall()
 			for r in row:
 				try:
@@ -330,9 +329,9 @@ class Users:
 					citatels.remove(r[0])
 				except:
 					pass
+				itemTranslations[r[0],r[1]]
 
 			if len(itemList) > 0:
-				itemList = set(rList) - set(itemList)
 				if len(itemList) > 0:
 					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
 				for i in itemTranslation:
