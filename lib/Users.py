@@ -298,7 +298,10 @@ class Users:
 
 							if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
 								officeFlags[asset["item_id"]] = asset["location_id"]
-							itemList.add(asset["type_id"])
+							if asset["type_id"] < 69999999:
+								itemList.add(asset["type_id"])
+							else:
+								citadels.add(asset["type_id"])
 							assets.append(asset)
 						page += 1
 					continue
