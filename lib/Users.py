@@ -310,9 +310,9 @@ class Users:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
 					if a["location_id"] < 69999999:
-						itemList.add(asset["location_id"])
+						itemList.add(a["location_id"])
 					else:
-						citadels.add(asset["location_id"])
+						citadels.add(a["location_id"])
 
 			itemTranslations = {}
 			if len(itemList) > 0:
