@@ -318,7 +318,7 @@ class Users:
 						itemList.add(a["location_id"])
 					else:
 						citadels.add(a["location_id"])
-				nw.append(a)
+					nw.append(a)
 			assets = nw
 			print("afterassets")
 			print(assets)
