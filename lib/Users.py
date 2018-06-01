@@ -318,10 +318,9 @@ class Users:
 						itemList.add(a["location_id"])
 					else:
 						citadels.add(a["location_id"])
-					nw.append(a)
-			assets = nw
+				nw.append(a)
 			print("afterassets")
-			print(assets)
+			print(nw)
 			itemTranslations = {}
 			cur = self.db.query("SELECT idnum,name FROM itemLookup")
 			row = cur.fetchall()
@@ -335,14 +334,6 @@ class Users:
 				except:
 					pass
 				itemTranslations[r[0]] = r[1]
-			print("itemlist")
-			print(itemList)
-			print("citadels")
-			print(citadels)
-			print("row")
-			print(row)
-			print("officeflags")
-			print(officeFlags)
 
 			if len(itemList) > 0:
 				if len(itemList) > 0:
@@ -358,7 +349,7 @@ class Users:
 						cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[s,citadelInfo["name"]])
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
-		self.corpAssets = assets
+		self.corpAssets = nw
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
-		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
+		return {"assets": nw, "translations": itemTranslations, "divisions": divisions}
