@@ -270,8 +270,6 @@ class Users:
 		itemTranslations = self.itemTranslations
 		divisions = self.divisions
 		officeFlags = {}
-		itemL = [[]]
-		iL = 0
 		if int(time.time() - self.corpCache) > 3600:
 			self.corpCache = int(time.time())
 			citadels = set()
@@ -308,6 +306,12 @@ class Users:
 						page += 1
 					continue
 
+			for k in officeFlags:
+				try:
+					officeFlags[k] = officeFlags[officeFlags[k]]
+				except:
+					pass
+
 			nw = []
 			print("beforeassets")
 			print(assets)
@@ -319,8 +323,9 @@ class Users:
 					else:
 						citadels.add(a["location_id"])
 				nw.append(a)
+			assets = nw
 			print("afterassets")
-			print(nw)
+			print(assets)
 			itemTranslations = {}
 			cur = self.db.query("SELECT idnum,name FROM itemLookup")
 			row = cur.fetchall()
@@ -349,7 +354,7 @@ class Users:
 						cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[s,citadelInfo["name"]])
 					else:
 						itemTranslations[s] = "Unknown - No permissions"
-		self.corpAssets = nw
+		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
-		return {"assets": nw, "translations": itemTranslations, "divisions": divisions}
+		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
