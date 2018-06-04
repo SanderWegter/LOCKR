@@ -344,8 +344,13 @@ class Users:
 				if len(itemList) > 0:
 					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
 				for i in itemTranslation:
+					itemTypeLookup = self.esi.getESIInfo('get_universe_types_type_id',{"type_id": i['id']})
+					marketGroupName = "Unknown"
+					if "market_group_id" in itemTypeLookup:
+						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
+						marketGroupName = marketGroup["name"]
 					itemTranslations[i['id']] = i["name"]
-					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[i['id'],i['name']])
+					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[i['id'],i['name'],marketGroupName])
 			if len(citadels)>0:
 				for s in citadels:
 					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
@@ -358,3 +363,10 @@ class Users:
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
 		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
+
+	def getMarketItems(self):
+		cur = self.db.query("SELECT typeID, typeName FROM invTypes")
+		items = []
+		for r in cur.fetchall():
+			items.append({"id": r[0], "name": r[1]})
+		return items
