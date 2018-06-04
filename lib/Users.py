@@ -347,11 +347,11 @@ class Users:
 					itemTypeLookup = self.esi.getESIInfo('get_universe_types_type_id',{"type_id": i['id']})
 					marketGroupName = "Unknown"
 					if "market_group_id" in itemTypeLookup:
-						marketGroupName = marketGroup["name"]
+						marketGroupName = ""
 						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
 						while True:
 							if "parent_group_id" in marketGroup:
-								marketGroupName = marketGroupName +" > "
+								marketGroupName = " > " + marketGroupName 
 								marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
 							else:
 								continue
