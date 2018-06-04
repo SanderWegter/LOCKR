@@ -327,7 +327,7 @@ class Users:
 			print("afterassets")
 			print(assets)
 			itemTranslations = {}
-			cur = self.db.query("SELECT idnum,name FROM itemLookup")
+			cur = self.db.query("SELECT idnum,name,marketGroup FROM itemLookup WHERE marketGroup IS NOT NULL")
 			row = cur.fetchall()
 			for r in row:
 				try:
@@ -350,6 +350,7 @@ class Users:
 						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
 						marketGroupName = marketGroup["name"]
 					itemTranslations[i['id']] = i["name"]
+					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
 					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[i['id'],i['name'],marketGroupName])
 			if len(citadels)>0:
 				for s in citadels:
