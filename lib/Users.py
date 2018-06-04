@@ -352,6 +352,7 @@ class Users:
 						while "parent_group_id" in marketGroup:
 							marketGroupName = marketGroup["name"] + " > " + marketGroupName
 							marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
+					marketGroupName = marketGroupName.split(">")[":-1"]
 					itemTranslations[i['id']] = i["name"]
 					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
 					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[i['id'],i['name'],marketGroupName])
