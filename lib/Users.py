@@ -29,6 +29,7 @@ class Users:
 		self.corpAssets = []
 		self.itemTranslations = {}
 		self.divisions = []
+		self.priceUpdateCache = 0
 
 	def isLoggedIn(self):
 		if "token" in session:
@@ -371,8 +372,81 @@ class Users:
 		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
 
 	def getMarketItems(self):
-		cur = self.db.query("SELECT typeID, typeName FROM invTypes")
-		items = []
+		results = []
+		if "q" in request.args:
+			print(request.args["q"])
+			cur = self.db.query("SELECT invTypes.typeID, typeName FROM invTypes LEFT JOIN priceLookup P ON P.typeID = invTypes.typeID WHERE marketGroupID IS NOT NULL AND typeName LIKE %s AND P.typeID IS NULL AND typeName NOT LIKE %s",["%"+request.args["q"]+"%","%blueprint%"])
+			for r in cur.fetchall():
+				results.append({"id": r[0], "text": r[1]})
+		return {"results": results}
+
+	def postMarketItems(self):
+		items = request.form.getlist("items[]")
+		translation = []
+		for item in items:
+			cur = self.db.query("INSERT INTO priceLookup (typeID, iskBuy, iskSell) VALUES(%s,%s,%s) ON DUPLICATE KEY UPDATE iskBuy = iskBuy, iskSell=iskSell",[item,"0","0"])
+		return {}
+
+	def getPricingInfo(self):
+		cur = self.db.query("SELECT typeID, iskBuy, iskSell FROM priceLookup")
+		translation = set()
+		prices = {}
 		for r in cur.fetchall():
-			items.append({"id": r[0], "name": r[1]})
-		return items
+			translation.add(r[0])
+			prices[r[0]] = {"iskBuy": r[1], "iskSell": r[2], "materials": {}}
+		itemTranslations = {}
+		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": translation})
+		for i in itemTranslation:
+			itemTranslations[i["id"]] = {"name": i["name"]}
+
+		translation = set()
+
+		for p in prices:
+			bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
+			try:
+				bpID = bpItemID["inventory_type"]
+				cur = self.db.query("SELECT materialTypeID, quantity FROM industryActivityMaterials WHERE activityID = %s AND typeID = %s",[1,bpID])
+				res = cur.fetchall()
+				if len(res)>0:
+					for m in res:
+						translation.add(m[0])
+						USED_ME = 5
+						mats = math.ceil((m[1] * ((99)/100) * ((100-USED_ME)/100)))
+						prices[p]["materials"].update({m[0]: mats})
+			except:
+				pass
+
+		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": translation})
+		for i in itemTranslation:
+			itemTranslations[i["id"]] = {"name": i["name"]}
+
+		return {"items":prices, "translations": itemTranslations}
+
+	def delMarketItem(self, itemID):
+		cur = self.db.query("DELETE FROM priceLookup WHERE typeID = %s",[itemID])
+		return {}
+
+	def updatePrice(self):
+		#TEMP until i figure out calcs myself...
+		#30000142 = jita
+		#Avg = (jita[buy][max] + jita[sell][min]) / 2
+		baseURL = "https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid="
+		#JITA_REGION = 10000002
+		if int(time.time() - self.priceUpdateCache) > 3600:
+			self.priceUpdateCache = int(time.time())
+
+			cur = self.db.query("SELECT typeID FROM priceLookup")
+			items = []
+			for t in cur.fetchall():
+				items.append(str(t[0]))
+			items = ",".join(items)
+
+			r = get(baseURL+items)
+			marketInfo = r.json()
+			for r in marketInfo:
+				typeID = r["buy"]["forQuery"]["types"][0]
+				buy = r["buy"]["fivePercent"]
+				sell = r["sell"]["fivePercent"]
+				avg = (buy + sell) / 2
+				cur = self.db.query("UPDATE priceLookup SET iskBuy = %s, iskSell = %s WHERE typeID = %s",[buy,sell,typeID])
+		return {}

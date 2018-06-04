@@ -1,0 +1,147 @@
+{% extends 'layout.html' %} {% block body %}
+<script src="{{ url_for('static', filename='js/pricing.js', version=ts) }}"></script>
+<section class="content-header">
+    <h1>Pricing and Minerals lookup</h1>
+    <ul class="breadcrumb">
+        <li><a href="/"><i class="fa fa-dashboard"></i> Home</a></li>
+        <li class="active">Pricing</li>
+    </ul>
+</section>
+<section class="content">
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/34_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Tritanium
+                    </div>
+                    <div class="info-box-number tritIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/35_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Pyerite
+                    </div>
+                    <div class="info-box-number pyeIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/36_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Mexallon
+                    </div>
+                    <div class="info-box-number mexIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/37_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Isogen
+                    </div>
+                    <div class="info-box-number isoIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/38_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Nocxium
+                    </div>
+                    <div class="info-box-number nocxIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/39_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Zydrine
+                    </div>
+                    <div class="info-box-number zydIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+					<img src='https://image.eveonline.com/Type/40_64.png'>
+				</span>
+                <div class="info-box-content">
+                    <div class="info-box-text">
+                        Megacyte
+                    </div>
+                    <div class="info-box-number megaIsk">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+				<span class="info-box-icon bg-green" style="cursor:pointer" onclick='updatePrices()'>
+					<i class="fa fa-refresh" id="spinRefresh"></i>
+				</span>
+				<div class="info-box-content">
+					<div class="info-box-text">
+						Pricing
+					</div>
+					<div class="info-box-number totalIsk">Reload</div>
+				</div>
+			</div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Price info</h3>
+                </div>
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover" id="priceTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Buy Price</th>
+                                <th>Build Price</th>
+                                <th>Options</th>
+                            </tr>
+                        </thead>
+                        <tbody class="priceList">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="box-footer clearfix">
+                	<select class="form-control" multiple="multiple" name="itemList" id="itemList">
+
+                    </select>
+                	<button class="btn btn-info" onclick='postItems()'>Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

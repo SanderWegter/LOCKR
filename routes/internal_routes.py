@@ -51,3 +51,29 @@ def getIndustryJobs():
 def getCorpAssets():
 	return json.dumps(users.getCorpAssets())
 
+@internal_routes.route("/internal/market/getMarketItems")
+@requires_auth
+def getMarketItems():
+	return json.dumps(users.getMarketItems())
+
+@internal_routes.route("/internal/market/getPricingInfo")
+@requires_auth
+def getPricingInfo():
+	return json.dumps(users.getPricingInfo())
+
+@internal_routes.route("/internal/market/postMarketItems",methods=["POST"])
+@requires_auth
+def postMarketItems():
+	return json.dumps(users.postMarketItems())
+
+@internal_routes.route("/internal/market/delMarketItem/<itemID>")
+@requires_auth
+@requires_admin
+def delMarketItem(itemID):
+	return json.dumps(users.delMarketItem(itemID))
+
+@internal_routes.route("/internal/market/updatePrice")
+@requires_auth
+@requires_admin
+def updatePrice():
+	return json.dumps(users.updatePrice())
