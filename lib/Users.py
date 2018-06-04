@@ -350,7 +350,7 @@ class Users:
 						marketGroupName = ""
 						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
 						while "parent_group_id" in marketGroup:
-							marketGroupName = marketGroup["name"] " > " + marketGroupName
+							marketGroupName = marketGroup["name"] + " > " + marketGroupName
 							marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
 					itemTranslations[i['id']] = i["name"]
 					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
