@@ -345,13 +345,14 @@ class Users:
 					itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
 				for i in itemTranslation:
 					itemTypeLookup = self.esi.getESIInfo('get_universe_types_type_id',{"type_id": i['id']})
-					marketGroupName = "Unknown"
+					marketGroupName = ["Unknown"]
 					if "market_group_id" in itemTypeLookup:
 						marketGroupName = []
 						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
 						while "parent_group_id" in marketGroup:
 							marketGroupName.append(marketGroup["name"])
 							marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
+					marketGroupName.reverse()
 					marketGroupName = " > ".join(marketGroupName)
 					itemTranslations[i['id']] = {'name': i["name"], 'group': marketGroupName}
 					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
