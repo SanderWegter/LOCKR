@@ -8,14 +8,15 @@ function getCorpAssets(){
 		$.each(assets, function(k,v){
 			bpc = ""
 			if(v.is_blueprint_copy){
-				bpc = "- BPC"
+				bpc = " - BPC"
 			}
 			$(".assetsList").append("\
 				<tr>\
-					<td><img src='https://image.eveonline.com/Type/"+v.type_id+"_32.png'><br>"+translations[v.type_id]+""+bpc+"</td>\
-					<td>"+translations[v.location_id]+"</td>\
+					<td><img src='https://image.eveonline.com/Type/"+v.type_id+"_32.png'><br>"+translations[v.type_id]["name"]+""+bpc+"</td>\
+					<td>"+translations[v.location_id]["name"]+"</td>\
 					<td>"+v.quantity+"</td>\
 					<td>"+v.location_flag+"<br>"+v.location_type+"<br>"+v.is_singleton+"</td>\
+					<td>"+translations[v.type_id]["group"]+"</td>\
 				</tr>\
 				")
 
