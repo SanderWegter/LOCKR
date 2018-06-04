@@ -338,7 +338,7 @@ class Users:
 					citadels.remove(r[0])
 				except:
 					pass
-				itemTranslations[r[0]] = r[1]
+				itemTranslations[r[0]] = {'name': r[1], 'group': r[2]}
 
 			if len(itemList) > 0:
 				if len(itemList) > 0:
@@ -352,18 +352,18 @@ class Users:
 						while "parent_group_id" in marketGroup:
 							marketGroupName = marketGroup["name"] + " > " + marketGroupName
 							marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
-					marketGroupName = marketGroupName.split(">")[":-1"]
-					itemTranslations[i['id']] = i["name"]
+					marketGroupName = marketGroupName.split(">")[:-1]
+					itemTranslations[i['id']] = {'name': i["name"], 'group': marketGroupName}
 					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
 					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[i['id'],i['name'],marketGroupName])
 			if len(citadels)>0:
 				for s in citadels:
 					citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
 					if "name" in citadelInfo:
-						itemTranslations[s] = citadelInfo["name"]
+						itemTranslations[s] = {'name': citadelInfo["name"]}
 						cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`) VALUES (%s,%s)",[s,citadelInfo["name"]])
 					else:
-						itemTranslations[s] = "Unknown - No permissions"
+						itemTranslations[s] = {'name': "Unknown - No permissions"}
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
