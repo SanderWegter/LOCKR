@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, session, redirect, url_for, request
 from functools import wraps
-from lib.Users import Users
+from lib.Functions import Functions
 from time import time
 
 from nav import navigation_bar
@@ -8,30 +8,24 @@ from nav import navigation_bar
 def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
-		if users.isVerified():
-			user = users.getUserInfo()
+		if functions.isVerified():
+			functions.getUserInfo()
 		else:
-			return redirect(url_for('page_routes.login', secure_uri=users.getAuthURI()))
+			return redirect(url_for('page_routes.login', secure_uri=functions.getAuthURI()))
 		return f(*args, **kwargs)
 	return decorated_auth
 
 def requires_admin(f):
 	@wraps(f)
 	def decoracted_admin(*args, **kwargs):
-		if not users.isAdmin():
+		if not functions.isAdmin():
 			return redirect(url_for('page_routes.index'))
 		return f(*args, **kwargs)
 	return decoracted_admin
 
 page_routes = Blueprint('page_routes', __name__, template_folder='templates')
 
-@page_routes.before_request
-def before_request():
-	if 'username' in session:
-		users.updateLastseen()
-	pass
-
-users = Users()
+functions = Functions()
 
 #Main routes
 @page_routes.route('/')
@@ -102,10 +96,10 @@ def login():
 		}
 		session.pop("notification")
 		session.pop("notificationtype")
-	if users.isLoggedIn():
+	if functions.isLoggedIn():
 		return redirect(url_for('page_routes.index'))
 	if request.method == "POST":
-		res = users.loginUser(request.form)
+		res = functions.loginUser(request.form)
 		if not res:
 			return redirect(url_for('page_routes.index'))
 	return render_template(
@@ -119,14 +113,14 @@ def login():
 
 @page_routes.route('/oauth')
 def oauth():
-	users.checkInUser(request.args.get('code'))
+	functions.checkInUser(request.args.get('code'))
 	return redirect(url_for('page_routes.index'))
 
 @page_routes.route('/logout')
 @requires_auth
 def logout():
-	users.logoutUser()
-	return redirect(url_for('page_routes.login', secure_uri=users.getAuthURI()))
+	functions.logoutUser()
+	return redirect(url_for('page_routes.login', secure_uri=functions.getAuthURI()))
 
 @page_routes.route('/admin')
 @requires_auth

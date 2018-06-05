@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, abort, session, redirect, url_for, request
 from functools import wraps
-from lib.Users import Users
+from lib.Functions import Functions
 from lib.Database import Database
 import json
 import datetime
@@ -8,7 +8,7 @@ import datetime
 def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
-		if not users.isLoggedIn():
+		if not functions.isLoggedIn():
 			return redirect(url_for('page_routes.login', secure_uri=esi.getAuthURI()))
 		return f(*args, **kwargs)
 	return decorated_auth
@@ -16,64 +16,64 @@ def requires_auth(f):
 def requires_admin(f):
 	@wraps(f)
 	def decorated_admin(*args, **kwargs):
-		if not users.isAdmin():
+		if not functions.isAdmin():
 			return json.dumps({"error": "Unauthorized"}),401
 		return f(*args, **kwargs)
 	return decorated_admin
 
 internal_routes = Blueprint('internal_routes', __name__, template_folder='templates')
-users = Users()
+functions = Functions()
 db = Database()
 
 @internal_routes.route("/internal/character/getWalletInfo")
 @requires_auth
 def getWalletInfo():
-	return json.dumps(users.getWalletInfo())
+	return json.dumps(functions.getWalletInfo())
 
 @internal_routes.route("/internal/character/getMarketInfo")
 @requires_auth
 def getMarketInfo():
-	return json.dumps(users.getMarketInfo())
+	return json.dumps(functions.getMarketInfo())
 
 @internal_routes.route("/internal/character/getSysID")
 @requires_auth
 def getSysID():
-	return json.dumps(users.getCharSysLocID())
+	return json.dumps(functions.getCharSysLocID())
 
 @internal_routes.route("/internal/industry/getAllJobs")
 @requires_auth
 def getIndustryJobs():
-	return json.dumps(users.getIndustryJobs())
+	return json.dumps(functions.getIndustryJobs())
 
 @internal_routes.route("/internal/industry/getCorpAssets")
 @requires_auth
 @requires_admin
 def getCorpAssets():
-	return json.dumps(users.getCorpAssets())
+	return json.dumps(functions.getCorpAssets())
 
 @internal_routes.route("/internal/market/getMarketItems")
 @requires_auth
 def getMarketItems():
-	return json.dumps(users.getMarketItems())
+	return json.dumps(functions.getMarketItems())
 
 @internal_routes.route("/internal/market/getPricingInfo")
 @requires_auth
 def getPricingInfo():
-	return json.dumps(users.getPricingInfo())
+	return json.dumps(functions.getPricingInfo())
 
 @internal_routes.route("/internal/market/postMarketItems",methods=["POST"])
 @requires_auth
 def postMarketItems():
-	return json.dumps(users.postMarketItems())
+	return json.dumps(functions.postMarketItems())
 
 @internal_routes.route("/internal/market/delMarketItem/<itemID>")
 @requires_auth
 @requires_admin
 def delMarketItem(itemID):
-	return json.dumps(users.delMarketItem(itemID))
+	return json.dumps(functions.delMarketItem(itemID))
 
 @internal_routes.route("/internal/market/updatePrice")
 @requires_auth
 @requires_admin
 def updatePrice():
-	return json.dumps(users.updatePrice())
+	return json.dumps(functions.updatePrice())
