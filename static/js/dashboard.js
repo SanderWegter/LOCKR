@@ -3,8 +3,6 @@ function getIndustry(){
 		jobs = data.jobs
 		translations = data.translations
 
-		console.log(jobs)
-
 		var d = new Date();
 		var curTime = d.getTime()
 		var offset = d.getTimezoneOffset() * 60 * 1000;
@@ -25,6 +23,40 @@ function getIndustry(){
 								</tr>\
 				")
 		})
+		jQuery.extend( jQuery.fn.dataTableExt.oSort, {
+		    "num-html-pre": function ( a ) {
+		        var x = String(a).replace( /<[\s\S]*?>/g, "" ).replace(/Done/g,0).split(" - active")[0]
+		        y = (parseInt(x.split("H")[0]) * 60 * 60) + parseInt(x.split("H")[1].split("M")[0])
+		        return parseFloat( y );
+		    },
+		 
+		    "num-html-asc": function ( a, b ) {
+		        return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+		    },
+		 
+		    "num-html-desc": function ( a, b ) {
+		        return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+		    }
+		} );
+
+		$.fn.dataTable.moment('HHH MMM - active');
+		$("#industryTable").DataTable({
+            'paging': true,
+            'pageLength': 25,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'order': [[ 6, "asc" ]],
+            'columnDefs': [
+		       { type: 'num-html', targets: 6 }
+		     ],
+            'info': true,
+            'autoWidth': true,
+            'language': {
+                'search': "_INPUT_",
+                'searchPlaceholder': "Search..."
+            }
+        })
 	})
 }
 
@@ -36,7 +68,6 @@ function formatNumber(n, d){
 }
 
 function convertDate(epoch) {
-	console.log(epoch)
     var date = new Date(epoch)
     var year = date.getFullYear();
     var month = ('0' + (date.getMonth() + 1)).slice(-2);
