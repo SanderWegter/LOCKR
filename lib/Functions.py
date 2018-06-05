@@ -8,7 +8,7 @@ import time
 import json
 import math
 
-class Users:
+class Functions:
 	def __init__(self):
 		self.db = Database()
 		self.esi = ESI()
@@ -71,7 +71,6 @@ class Users:
 		else:
 			session["token"] = self.esi.getToken(code)
 			r = self.esi.isVerified(session["token"])
-
 			cur = self.db.query("SELECT COUNT(*) FROM users WHERE charID = %s",[session["char"]["CharacterID"]])
 			if cur.fetchone()[0] == 0:
 				cur = self.db.query("""
@@ -89,6 +88,7 @@ class Users:
 		session["isAdmin"] = False
 		if "char" in session:
 			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
+			session["corpID"] = self.getCorpID()
 			if session["char"]["CharacterID"] in self.admins:
 				session["isAdmin"] = True
 		return self.esi.isVerified(session["token"])
@@ -314,8 +314,6 @@ class Users:
 					pass
 
 			nw = []
-			print("beforeassets")
-			print(assets)
 			for a in assets:
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -325,8 +323,6 @@ class Users:
 						citadels.add(a["location_id"])
 				nw.append(a)
 			assets = nw
-			print("afterassets")
-			print(assets)
 			itemTranslations = {}
 			cur = self.db.query("SELECT idnum,name,marketGroup FROM itemLookup WHERE marketGroup IS NOT NULL")
 			row = cur.fetchall()
@@ -374,7 +370,6 @@ class Users:
 	def getMarketItems(self):
 		results = []
 		if "q" in request.args:
-			print(request.args["q"])
 			cur = self.db.query("SELECT invTypes.typeID, typeName FROM invTypes LEFT JOIN priceLookup P ON P.typeID = invTypes.typeID WHERE marketGroupID IS NOT NULL AND typeName LIKE %s AND P.typeID IS NULL AND typeName NOT LIKE %s",["%"+request.args["q"]+"%","%blueprint%"])
 			for r in cur.fetchall():
 				results.append({"id": r[0], "text": r[1]})
@@ -428,10 +423,11 @@ class Users:
 
 	def updatePrice(self):
 		#TEMP until i figure out calcs myself...
-		#30000142 = jita
+		#JITA_REGION = 10000002
+		#JITA SYSTEM = 30000142
 		#Avg = (jita[buy][max] + jita[sell][min]) / 2
 		baseURL = "https://api.evemarketer.com/ec/marketstat/json?usesystem=30000142&typeid="
-		#JITA_REGION = 10000002
+		
 		if int(time.time() - self.priceUpdateCache) > 3600:
 			self.priceUpdateCache = int(time.time())
 
