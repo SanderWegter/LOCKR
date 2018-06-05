@@ -16,12 +16,13 @@ class ESI:
 			app=self.esi_app,
 			redirect_uri=self.config.getConfig()["settings"]["esiCallback"],
 			client_id=self.config.getConfig()["settings"]["esiClientID"],
-			secret_key=self.config.getConfig()["settings"]["esiSecretKey"]
+			secret_key=self.config.getConfig()["settings"]["esiSecretKey"],
+			headers={'User-Agent': self.config.getConfig()["settings"]["esiCustomHeader"]}
 		)
 		self.client = EsiClient(
 			security=self.security,
 			retry_requests=True,
-			header={'User-Agent': self.config.getConfig()["settings"]["esiCustomHeader"]}
+			headers={'User-Agent': self.config.getConfig()["settings"]["esiCustomHeader"]}
 		)
 
 	def getAuthURI(self):
