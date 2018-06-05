@@ -3,3 +3,4 @@ config.yaml
 *.pyc
 *.DS_Store
 logs/*
+.vscode
