@@ -33,7 +33,7 @@ class Functions:
 
 	def isLoggedIn(self):
 		if "token" in session:
-			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
+			self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
 		return "token" in session
 
 	def getAuthURI(self):
@@ -87,7 +87,7 @@ class Functions:
 			return False
 		session["isAdmin"] = False
 		if "char" in session:
-			cur = self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
+			self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
 			session["corpID"] = self.getCorpID()
 			if session["char"]["CharacterID"] in self.admins:
 				session["isAdmin"] = True
@@ -184,16 +184,13 @@ class Functions:
 				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
 				itemTranslation[s] = citadelInfo["name"]
 
-		cur = self.db.query("SELECT ref_id,`date`,is_transaction,balance,in_out FROM wallet WHERE charID = %s ORDER BY `date` ASC",[charID])
+		cur = self.db.query("SELECT `date`,is_transaction,balance FROM wallet WHERE charID = %s ORDER BY `date` ASC",[charID])
 		walletHistory = []
-		old_balance = 0
 		for w in cur.fetchall():
-			ref_id,datestamp,is_transaction,balance,in_out = w
+			datestamp,is_transaction,balance = w
 
 			if is_transaction:
 				continue
-
-
 
 			walletHistory.append({
 				"datestamp": datestamp,
@@ -275,13 +272,12 @@ class Functions:
 			self.corpCache = int(time.time())
 			citadels = set()
 			itemList = set()
-			specialItems = set()
 			corpID = self.getCorpID()
 			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 			for r in cur.fetchall():
 				charID,refreshToken = r
 				self.esi.subToken(refreshToken)
-				t = self.esi.getForceRefresh()
+				self.esi.getForceRefresh()
 				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 				baseroles = roles["roles"]
 				if "Director" in baseroles:
@@ -377,9 +373,8 @@ class Functions:
 
 	def postMarketItems(self):
 		items = request.form.getlist("items[]")
-		translation = []
 		for item in items:
-			cur = self.db.query("INSERT INTO priceLookup (typeID, iskBuy, iskSell) VALUES(%s,%s,%s) ON DUPLICATE KEY UPDATE iskBuy = iskBuy, iskSell=iskSell",[item,"0","0"])
+			self.db.query("INSERT INTO priceLookup (typeID, iskBuy, iskSell) VALUES(%s,%s,%s) ON DUPLICATE KEY UPDATE iskBuy = iskBuy, iskSell=iskSell",[item,"0","0"])
 		return {}
 
 	def getPricingInfo(self):
@@ -418,7 +413,7 @@ class Functions:
 		return {"items":prices, "translations": itemTranslations}
 
 	def delMarketItem(self, itemID):
-		cur = self.db.query("DELETE FROM priceLookup WHERE typeID = %s",[itemID])
+		self.db.query("DELETE FROM priceLookup WHERE typeID = %s",[itemID])
 		return {}
 
 	def updatePrice(self):
@@ -443,6 +438,5 @@ class Functions:
 				typeID = r["buy"]["forQuery"]["types"][0]
 				buy = r["buy"]["fivePercent"]
 				sell = r["sell"]["fivePercent"]
-				avg = (buy + sell) / 2
 				cur = self.db.query("UPDATE priceLookup SET iskBuy = %s, iskSell = %s WHERE typeID = %s",[buy,sell,typeID])
 		return {}
