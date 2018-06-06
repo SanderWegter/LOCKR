@@ -68,7 +68,7 @@ class ESI:
 		if res.status == 200:
 			print(res.header)
 			number_of_pages = res.header["X-Pages"][0]
-
+			print(number_of_pages)
 			ops = []
 			for page in range(1, number_of_pages):
 				print(obj)
