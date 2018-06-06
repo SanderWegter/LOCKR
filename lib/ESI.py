@@ -69,7 +69,10 @@ class ESI:
 			number_of_pages = res.header["X-Pages"][0]
 			ops = []
 			for page in range(1, number_of_pages+1):
+				print(|number_of_pages)
+				print(page)
 				obj["page"] = page
+				print(obj)
 				ops.append(
 					self.esi_app.op[endpoint](**obj)
 				)
