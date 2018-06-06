@@ -4,7 +4,6 @@ function getPrices() {
     $(".priceList").html("")
     $.getJSON("/internal/market/getPricingInfo", function(data) {
         items = data.items
-        console.log(items)
         translations = data.translations
         $.each(items, function(k, v) {
             if (minerals[k] != undefined) {
@@ -12,8 +11,6 @@ function getPrices() {
             	$("."+minerals[k]).html("buy: "+ v.iskBuy+"<br>sell: "+v.iskSell)
                 return true
             }
-            console.log(k)
-            console.log(v)
             buildcost = 0
             $.each(v.materials, function(key,val){
                 if(items[key] == undefined){
