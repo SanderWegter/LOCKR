@@ -247,10 +247,10 @@ class Functions:
 					# 		hasMorePages = False
 							# continue
 					for resp in blueprints:
-						print(resp)
-						print(resp["response"])
+						print(resp.data)
+						print(resp.data["response"])
 						try:
-							bp = resp["response"]
+							bp = resp.data["response"]
 						except:
 							continue
 						bps[bp["item_id"]] = {
