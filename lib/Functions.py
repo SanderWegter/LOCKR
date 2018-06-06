@@ -239,7 +239,7 @@ class Functions:
 				baseroles = roles["roles"]
 				if "Director" in baseroles:
 					blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
-					for bp in blueprints[0][1].data:
+					for bp in blueprints[0][1].dataa:
 						bps[bp["item_id"]] = {
 												"location": bp["location_id"],
 												"type": bp["quantity"], 
