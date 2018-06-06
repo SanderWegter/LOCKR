@@ -228,7 +228,7 @@ class Functions:
 		bps = self.bps
 		
 		#Get blueprints
-		if int(time.time() - self.bpCache) > 86000:
+		if int(time.time() - self.bpCache) > 10:
 			self.bpCache = int(time.time())
 			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 			for r in cur.fetchall():
@@ -246,7 +246,9 @@ class Functions:
 					# if len(blueprints) == 0:
 					# 		hasMorePages = False
 							# continue
+					print(len(blueprints))
 					for resp in blueprints:
+						print(resp)
 						print(resp.data)
 						print(resp.data["response"])
 						try:
