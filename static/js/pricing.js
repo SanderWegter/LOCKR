@@ -7,7 +7,6 @@ function getPrices() {
         translations = data.translations
         $.each(items, function(k, v) {
             if (minerals[k] != undefined) {
-            	console.log(minerals[k])
             	$("."+minerals[k]).html("buy: "+ v.iskBuy+"<br>sell: "+v.iskSell)
                 return true
             }
