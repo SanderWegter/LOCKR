@@ -18,7 +18,7 @@ function getCorpAssets(){
 				bpc = " - BPC"
 			}
 			var location = v.location_flag
-			if ((v.location_flag).indexOf("CorpSAG")>0){
+			if ((v.location_flag).indexOf("CorpSAG")>=0){
 				location = hangars[(v.location_flag).split("CorpSAG")[1]]
 			}
 
