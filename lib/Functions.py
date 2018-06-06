@@ -307,10 +307,11 @@ class Functions:
 				group_id = self.esi.getESIInfo('get_universe_types_type_id',{'type_id': a["type_id"]})
 				if group_id["group_id"] in self.accepted_groups:
 					aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
-					print(aName)
-					assetNames[a["item_id"]] = aName
-					a["itemName"] = aName
+					if "error" not in aName:
+						assetNames[a["item_id"]] = aName[0]["name"]
+						a["itemName"] = aName[0]["name"]
 				if a["location_id"] in officeFlags:
+					a["orig_location_id"] = a["location_id"]
 					a["location_id"] = officeFlags[a["location_id"]]
 					if a["location_id"] < 69999999:
 						itemList.add(a["location_id"])
@@ -360,7 +361,7 @@ class Functions:
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
-		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNames}
+		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNames, "officeFlags": officeFlags}
 
 	def getMarketItems(self):
 		results = []

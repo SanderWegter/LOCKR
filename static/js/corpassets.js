@@ -2,7 +2,7 @@ function getCorpAssets(){
 	$.getJSON("/internal/industry/getCorpAssets", function(data){
 		assets = data.assets
 		translations = data.translations
-
+		assetNames = data.assetnamelist
 		divisions = data.divisions
 
 		hangars = {}
@@ -20,6 +20,10 @@ function getCorpAssets(){
 			var location = v.location_flag
 			if ((v.location_flag).indexOf("CorpSAG")>=0){
 				location = hangars[(v.location_flag).split("CorpSAG")[1]]
+			}
+
+			if (v.orig_location_id != undefined){
+				console.log(assetNames[v.orig_location_id])
 			}
 
 			$(".assetsList").append("\
