@@ -1,3 +1,15 @@
+var activities = [
+	"None",					//0
+	"Manufacturing",		//1
+	"Researching Tech",		//2
+	"Researching TE",		//3
+	"Researching ME",		//4
+	"Copying",				//5
+	"Duplicating",			//6
+	"Invention",			//7
+	"Reverse engineering"	//8
+]
+
 function getIndustry(){
 	$.getJSON("/internal/industry/getAllJobs", function(data){
 		jobs = data.jobs
@@ -11,12 +23,33 @@ function getIndustry(){
 			var startTime = v.start_date - offset
 			var endTime = v.end_date - offset
 			var timeLeft = countDown(endTime)
-			$(".industryList").append("\
+			var table = "None"
+			switch(v.activity_id){
+				case 1:
+					table = "Manu"
+					break;
+				case 2:
+				case 3:
+				case 4:
+					table = "Res"
+					break;
+				case 5:
+				case 6:
+					table = "Copy"
+					break;
+				case 7:
+				case 8:
+					table = "Res"
+					break;
+				default:
+					table = "None"
+			}
+			$(".industry"+table+"List").append("\
 								<tr>\
 									<td><img src='https://image.eveonline.com/Type/"+v.blueprint_type_id+"_32.png'><br>"+translations[v.blueprint_type_id]+"</td>\
 									<td><img src='https://image.eveonline.com/Character/"+v.installer_id+"_32.jpg'><br>"+translations[v.installer_id]+"</td>\
 									<td>"+translations[v.location_id]+"</td>\
-									<td>"+v.activity_id+"<br>Runs: "+v.runs+"/"+v.licensed_runs+"</td>\
+									<td>"+activities[v.activity_id]+"<br>Runs: "+v.runs+"/"+v.licensed_runs+"</td>\
 									<td>"+convertDate(startTime)+"</td>\
 									<td>"+convertDate(endTime)+"</td>\
 									<td>"+timeLeft+" - "+v.status+"</td>\
@@ -40,8 +73,41 @@ function getIndustry(){
 		    }
 		} );
 
-		$.fn.dataTable.moment('HHH MMM - active');
-		$("#industryTable").DataTable({
+		$("#industryManuTable").DataTable({
+            'paging': true,
+            'pageLength': 25,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'order': [[ 6, "asc" ]],
+            'columnDefs': [
+		       { type: 'num-html', targets: 6 }
+		     ],
+            'info': true,
+            'autoWidth': true,
+            'language': {
+                'search': "_INPUT_",
+                'searchPlaceholder': "Search..."
+            }
+		})
+		$("#industryCopyTable").DataTable({
+            'paging': true,
+            'pageLength': 25,
+            'lengthChange': true,
+            'searching': true,
+            'ordering': true,
+            'order': [[ 6, "asc" ]],
+            'columnDefs': [
+		       { type: 'num-html', targets: 6 }
+		     ],
+            'info': true,
+            'autoWidth': true,
+            'language': {
+                'search': "_INPUT_",
+                'searchPlaceholder': "Search..."
+            }
+		})
+		$("#industryResTable").DataTable({
             'paging': true,
             'pageLength': 25,
             'lengthChange': true,

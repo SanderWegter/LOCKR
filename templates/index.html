@@ -16,21 +16,72 @@
 					<h3 class="box-title">Industry Jobs</h3>
 				</div>
 				<div class="box-body table-responsive no-padding">
-					<table class="table table-hover" id="industryTable">
-						<thead>
-							<tr>
-								<th>Item</th>
-								<th>Character</th>
-								<th>Location</th>
-								<th>Action</th>
-								<th>Start</th>
-								<th>End</th>
-								<th>Timeleft</th>
-							</tr>
-						</thead>
-						<tbody class="industryList">
-						</tbody>
-					</table>
+					<div class='nav-tabs-custom'>
+						<ul class="nav nav-tabs">
+							<li class='active'>
+								<a href="#manu" data-toggle="tab" aria-expanded="true">Manufacturing</a>
+							</li>
+							<li>
+								<a href="#copy" data-toggle="tab" aria-expanded="false">Copying</a>
+							</li>
+							<li>
+								<a href="#res" data-toggle="tab" aria-expanded="false">Research</a>
+							</li>
+						</ul>
+						<div class="tab-content">
+							<div class="tab-pane active" id="manu">
+								<table class="table table-hover" id="industryManuTable">
+									<thead>
+										<tr>
+											<th>Item</th>
+											<th>Character</th>
+											<th>Location</th>
+											<th>Action</th>
+											<th>Start</th>
+											<th>End</th>
+											<th>Timeleft</th>
+										</tr>
+									</thead>
+									<tbody class="industryManuList">
+									</tbody>
+								</table>
+							</div>
+							<div class="tab-pane" id="copy">
+								<table class="table table-hover" id="industryCopyTable">
+									<thead>
+										<tr>
+											<th>Item</th>
+											<th>Character</th>
+											<th>Location</th>
+											<th>Action</th>
+											<th>Start</th>
+											<th>End</th>
+											<th>Timeleft</th>
+										</tr>
+									</thead>
+									<tbody class="industryCopyList">
+									</tbody>
+								</table>
+							</div>
+							<div class="tab-pane" id="res">
+								<table class="table table-hover" id="industryResTable">
+									<thead>
+										<tr>
+											<th>Item</th>
+											<th>Character</th>
+											<th>Location</th>
+											<th>Action</th>
+											<th>Start</th>
+											<th>End</th>
+											<th>Timeleft</th>
+										</tr>
+									</thead>
+									<tbody class="industryResList">
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
 				<div class="box-footer clearfix">
 				</div>
