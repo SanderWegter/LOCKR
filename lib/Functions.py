@@ -19,6 +19,9 @@ class Functions:
 		self.itemTranslations = {}
 		self.divisions = []
 		self.priceUpdateCache = 0
+		self.accepted_groups = [
+			12 # cargo containers
+		]
 
 	def isLoggedIn(self):
 		if "token" in session:
@@ -298,10 +301,15 @@ class Functions:
 			assetNames = {}
 			nw = []
 			for a in assets:
-				aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
-				print(aName)
-				assetNames[a["item_id"]] = aName
-				a["itemName"] = aName
+				# get_universe_types_type_id => group_id
+				# get_universe_groups_group_id => category_id
+				# get_universe_categories_category_id => name
+				group_id = self.esi.getESIInfo('get_universe_types_type_id',{'type_id': a["type_id"]})
+				if group_id["group_id"] in self.accepted_groups:
+					aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
+					print(aName)
+					assetNames[a["item_id"]] = aName
+					a["itemName"] = aName
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
 					if a["location_id"] < 69999999:
