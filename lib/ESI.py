@@ -61,6 +61,22 @@ class ESI:
 			pass
 		return result
 
+	def getESIInfoMP(self, endpoint, obj):
+		info = self.esi_app.op[endpoint](**obj)
+		res = self.client.head(info)
+
+		if res.status == 200:
+			number_of_pages = res.header["X-Pages"][0]
+
+			ops = []
+			for page in range(1, number_of_pages):
+				ops.append(
+					self.esi_app.op[endpoint](**obj, page=page)
+				)
+			results = self.client.multi_request(ops)
+			return results
+		return {}
+
 	def subToken(self, refresh_token):
 		self.security.update_token({
 			'access_token': '',  

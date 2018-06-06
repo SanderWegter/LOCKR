@@ -21,6 +21,8 @@ class Functions:
 		self.assetNames = {}
 		self.officeFlags = {}
 		self.priceUpdateCache = 0
+		self.bpCache = 0
+		self.bps = {}
 		self.accepted_groups = [
 			12 # cargo containers
 		]
@@ -223,37 +225,47 @@ class Functions:
 		corpID = self.getCorpID()
 		citadels = set()
 		itemList = set()
-
+		bps = self.bps
+		
 		#Get blueprints
-		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
-		for r in cur.fetchall():
-			charID,refreshToken = r
-			self.esi.subToken(refreshToken)
-			self.esi.getForceRefresh()
-			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
-			baseroles = roles["roles"]
-			if "Director" in baseroles:
-				page = 1
-				hasMorePages = True
-				while hasMorePages:
-					blueprints = self.esi.getESIInfo('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
-					if len(blueprints) == 0:
-						hasMorePages = False
-						continue
-					print(json.dumps(blueprints,indent=4))
-					# for asset in assetList:
-					# 	if asset["location_id"] < 69999999:
-					# 		itemList.add(asset["location_id"])
-					# 	else:
-					# 		citadels.add(asset["location_id"])
+		if int(time.time() - self.bpCache) > 86000:
+			self.bpCache = int(time.time())
+			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+			for r in cur.fetchall():
+				charID,refreshToken = r
+				self.esi.subToken(refreshToken)
+				self.esi.getForceRefresh()
+				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+				baseroles = roles["roles"]
+				if "Director" in baseroles:
+					#page = 1
+					#hasMorePages = True
+					#while hasMorePages:
+						#blueprints = self.esi.getESIInfo('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
+					blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
+					# if len(blueprints) == 0:
+					# 		hasMorePages = False
+							# continue
+					bps[blueprints["item_id"]] = {
+											"location": blueprints["location_id"], 
+											"type": blueprints["quantity"], 
+											"type_id": blueprints["type_id"], 
+											"me": blueprints["material_efficiency"],
+											"te": blueprints["time_efficiency"]
+											}
+						# for asset in assetList:
+						# 	if asset["location_id"] < 69999999:
+						# 		itemList.add(asset["location_id"])
+						# 	else:
+						# 		citadels.add(asset["location_id"])
 
-					# 	if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
-					# 		officeFlags[asset["item_id"]] = asset["location_id"]
-					# 	if asset["type_id"] < 69999999:
-					# 		itemList.add(asset["type_id"])
-					# 	assets.append(asset)
-					page += 1
-				continue
+						# 	if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
+						# 		officeFlags[asset["item_id"]] = asset["location_id"]
+						# 	if asset["type_id"] < 69999999:
+						# 		itemList.add(asset["type_id"])
+						# 	assets.append(asset)
+						#page += 1
+					continue
 
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
 		industry = []
@@ -285,7 +297,8 @@ class Functions:
 					itemTranslations[s] = citadelInfo["name"]
 				else:
 					itemTranslations[s] = "Unknown - No permissions"
-		return {"jobs":industry, "translations": itemTranslations}
+		self.bps = bps
+		return {"jobs":industry, "translations": itemTranslations, "bps": bps}
 
 	def getCorpAssets(self):
 		assets = self.corpAssets
