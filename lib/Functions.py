@@ -247,7 +247,7 @@ class Functions:
 					# 		hasMorePages = False
 							# continue
 					bps[blueprints["item_id"]] = {
-											"location": blueprints["location_id"], 
+											"location": blueprints["location_id"] if "location_id" in blueprints else "0", 
 											"type": blueprints["quantity"], 
 											"type_id": blueprints["type_id"], 
 											"me": blueprints["material_efficiency"],
