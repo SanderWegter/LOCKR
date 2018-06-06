@@ -47,8 +47,7 @@ function getIndustry(){
 			}
 			var bpobpc = ""
 			if (v.activity_id == 1 && bps[v.blueprint_id] != undefined){
-				console.log(bps[v.blueprint_id])
-				if (bps[v.blueprint_id].type == -1 || bps[v.blueprint_id].type > 0){
+				if (bps[v.blueprint_id].type >= -1){
 					bpobpc = " - BPO"
 				}
 				else if (bps[v.blueprint_id].type == -2){
