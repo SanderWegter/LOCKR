@@ -273,6 +273,7 @@ class Functions:
 					while hasMorePages:
 						divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
 						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
+						assetNameList = self.esi.getESIInfo('get_corporation_corporation_id_assets_names',{'corporation_id': corpID})
 						if len(assetList) == 0:
 							hasMorePages = False
 							continue
@@ -348,7 +349,7 @@ class Functions:
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
-		return {"assets": assets, "translations": itemTranslations, "divisions": divisions}
+		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNameList}
 
 	def getMarketItems(self):
 		results = []
