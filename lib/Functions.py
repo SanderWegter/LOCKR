@@ -18,6 +18,8 @@ class Functions:
 		self.corpAssets = []
 		self.itemTranslations = {}
 		self.divisions = []
+		self.assetNames = {}
+		self.officeFlags = {}
 		self.priceUpdateCache = 0
 		self.accepted_groups = [
 			12 # cargo containers
@@ -257,7 +259,8 @@ class Functions:
 		assets = self.corpAssets
 		itemTranslations = self.itemTranslations
 		divisions = self.divisions
-		officeFlags = {}
+		officeFlags = self.officeFlags
+		assetNames = self.assetNames
 		if int(time.time() - self.corpCache) > 3600:
 			self.corpCache = int(time.time())
 			citadels = set()
@@ -307,9 +310,11 @@ class Functions:
 				group_id = self.esi.getESIInfo('get_universe_types_type_id',{'type_id': a["type_id"]})
 				if group_id["group_id"] in self.accepted_groups:
 					aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
-					if "error" not in aName:
+					try:
 						assetNames[a["item_id"]] = aName[0]["name"]
 						a["itemName"] = aName[0]["name"]
+					except:
+						pass
 				if a["location_id"] in officeFlags:
 					a["orig_location_id"] = a["location_id"]
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -360,7 +365,9 @@ class Functions:
 						itemTranslations[s] = {'name': "Unknown - No permissions"}
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
-		self.divisions = divisions			
+		self.divisions = divisions
+		self.assetNames = assetNames
+		self.officeFlags = officeFlags			
 		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNames, "officeFlags": officeFlags}
 
 	def getMarketItems(self):
