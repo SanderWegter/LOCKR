@@ -299,6 +299,8 @@ class Functions:
 			nw = []
 			for a in assets:
 				aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
+				print(aName)
+				assetNames[a["item_id"]] = aName
 				a["itemName"] = aName
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
@@ -350,7 +352,7 @@ class Functions:
 		self.corpAssets = assets
 		self.itemTranslations = itemTranslations
 		self.divisions = divisions			
-		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNameList}
+		return {"assets": assets, "translations": itemTranslations, "divisions": divisions, "assetnamelist": assetNames}
 
 	def getMarketItems(self):
 		results = []
