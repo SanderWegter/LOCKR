@@ -238,14 +238,7 @@ class Functions:
 				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 				baseroles = roles["roles"]
 				if "Director" in baseroles:
-					#page = 1
-					#hasMorePages = True
-					#while hasMorePages:
-						#blueprints = self.esi.getESIInfo('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
 					blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
-					# if len(blueprints) == 0:
-					# 		hasMorePages = False
-							# continue
 					for bp in blueprints[0][1].data:
 						bps[bp["item_id"]] = {
 												"location": bp["location_id"],
@@ -254,18 +247,6 @@ class Functions:
 												"me": bp["material_efficiency"],
 												"te": bp["time_efficiency"]
 												}
-						# for asset in assetList:
-						# 	if asset["location_id"] < 69999999:
-						# 		itemList.add(asset["location_id"])
-						# 	else:
-						# 		citadels.add(asset["location_id"])
-
-						# 	if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
-						# 		officeFlags[asset["item_id"]] = asset["location_id"]
-						# 	if asset["type_id"] < 69999999:
-						# 		itemList.add(asset["type_id"])
-						# 	assets.append(asset)
-						#page += 1
 					continue
 
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})

@@ -14,6 +14,7 @@ function getIndustry(){
 	$.getJSON("/internal/industry/getAllJobs", function(data){
 		jobs = data.jobs
 		translations = data.translations
+		bps = data.bps
 
 		var d = new Date();
 		var curTime = d.getTime()
@@ -44,9 +45,18 @@ function getIndustry(){
 				default:
 					table = "None"
 			}
+			var bpobpc = ""
+			if (v.activity_id == 1 && bps[v.blueprint_id] != undefined){
+				if (bps[v.blueprint_id].type == -1 || bps[v.blueprint_id].type > 0){
+					bpobpc = " - BPO"
+				}
+				else if (bps[v.blueprint_id].type == -2){
+					bpobpc = " - BPC"
+				}
+			}
 			$(".industry"+table+"List").append("\
 								<tr>\
-									<td><img src='https://image.eveonline.com/Type/"+v.blueprint_type_id+"_32.png'><br>"+translations[v.blueprint_type_id]+"</td>\
+									<td><img src='https://image.eveonline.com/Type/"+v.blueprint_type_id+"_32.png'><br>"+translations[v.blueprint_type_id]+""+bpobpc+"</td>\
 									<td><img src='https://image.eveonline.com/Character/"+v.installer_id+"_32.jpg'><br>"+translations[v.installer_id]+"</td>\
 									<td>"+translations[v.location_id]+"</td>\
 									<td>"+activities[v.activity_id]+"<br>Runs: "+v.runs+"/"+v.licensed_runs+"</td>\
