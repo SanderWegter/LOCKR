@@ -25,7 +25,8 @@ function getIndustry(){
 		})
 		jQuery.extend( jQuery.fn.dataTableExt.oSort, {
 		    "num-html-pre": function ( a ) {
-		        var x = String(a).replace( /<[\s\S]*?>/g, "" ).replace(/Done/g,0).split(" - active")[0]
+				var x = String(a).replace( /<[\s\S]*?>/g, "" ).replace(/Done/g,0).split(" - active")[0]
+				if (x == 0) return x
 		        y = (parseInt(x.split("H")[0]) * 60 * 60) + parseInt(x.split("H")[1].split("M")[0])
 		        return parseFloat( y );
 		    },
