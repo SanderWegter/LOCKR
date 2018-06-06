@@ -19,6 +19,12 @@ function getPrices() {
             	buildcost += val * items[key]["iskBuy"]
             })
 
+            var sell = convertCurrency(v.iskSell)
+
+            if (buildcost > v.iskBuy  && v.iskSell > buildcost){
+                sell = "<b><font color='red'>"+convertCurrency(v.iskSell)+"</font></b>"
+            }
+
             if (buildcost < v.iskBuy){
             	buy = "danger"
             	build = "success"
@@ -31,7 +37,7 @@ function getPrices() {
             $(".priceList").append(
                 "<tr>\
 						<td><img src='https://image.eveonline.com/Type/" + k + "_32.png'><br>" + translations[k]["name"] + "</td>\
-						<td class='"+buy+"'>Buy: " + convertCurrency(v.iskBuy) + "<br>Sell: "+ convertCurrency(v.iskSell)+"</td>\
+						<td class='"+buy+"'>Buy: " + convertCurrency(v.iskBuy) + "<br>Sell: "+sell+"</td>\
 						<td class='"+build+"'>"+convertCurrency(buildcost)+"</td>\
 						<td><button class='btn btn-xs btn-danger' onclick='delItem(\"" + k + "\")'>Delete</button></td>\
 					</tr>"
