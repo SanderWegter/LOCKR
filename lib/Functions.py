@@ -221,8 +221,6 @@ class Functions:
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
 		industry = []
 		for i in industryJobs:
-			#if "activity_id" in i:
-				#i["activity_id"] = self.activity_ids[i["activity_id"]]
 			if "end_date" in i:
 				i["end_date"] = int(time.mktime(time.strptime(str(i["end_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
 			if "start_date" in i:

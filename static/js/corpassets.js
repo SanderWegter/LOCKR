@@ -3,6 +3,13 @@ function getCorpAssets(){
 		assets = data.assets
 		translations = data.translations
 
+		divisions = data.divisions
+
+		hangars = {}
+		$.each(divisions.hangar, function(k,v){
+			hangars[v["division"]] = v["name"]
+		})
+
 		console.log(assets)
 		console.log(translations)
 		$.each(assets, function(k,v){
@@ -10,12 +17,17 @@ function getCorpAssets(){
 			if(v.is_blueprint_copy){
 				bpc = " - BPC"
 			}
+			var location = v.location_flag
+			if ((v.location_flag).indexOf("CorpSAG")>0){
+				location = hangars[(v.location_flag).split("CorpSAG")[1]]
+			}
+
 			$(".assetsList").append("\
 				<tr>\
 					<td><img src='https://image.eveonline.com/Type/"+v.type_id+"_32.png'><br>"+translations[v.type_id]["name"]+""+bpc+"</td>\
 					<td>"+translations[v.location_id]["name"]+"</td>\
 					<td>"+v.quantity+"</td>\
-					<td>"+v.location_flag+"<br>"+v.location_type+"<br>"+v.is_singleton+"</td>\
+					<td>"+location+"<br>"+v.location_type+"<br>"+v.is_singleton+"</td>\
 					<td>"+translations[v.type_id]["group"]+"</td>\
 				</tr>\
 				")
