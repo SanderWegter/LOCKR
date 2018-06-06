@@ -16,7 +16,12 @@ function getPrices() {
             console.log(v)
             buildcost = 0
             $.each(v.materials, function(key,val){
-            	buildcost += val * items[key]["iskBuy"]
+                if(items[key] == undefined){
+                    console.log("missing item: "+key+" - "+translations[key]["name"])
+                }
+                else{
+                    buildcost += val * items[key]["iskBuy"]
+                }
             })
 
             var sell = convertCurrency(v.iskSell)
