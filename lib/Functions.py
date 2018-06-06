@@ -246,7 +246,9 @@ class Functions:
 					# if len(blueprints) == 0:
 					# 		hasMorePages = False
 							# continue
+					print(blueprints)
 					for bp in blueprints:
+						print(bp)
 						bps[bp["item_id"]] = {
 												"location": bp["location_id"],
 												"type": bp["quantity"], 
