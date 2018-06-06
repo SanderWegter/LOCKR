@@ -66,14 +66,10 @@ class ESI:
 		res = self.client.head(info)
 
 		if res.status == 200:
-			print(res.header)
 			number_of_pages = res.header["X-Pages"][0]
-			print(number_of_pages)
 			ops = []
-			for page in range(1, number_of_pages):
-				print(obj)
+			for page in range(1, number_of_pages+1):
 				obj["page"] = page
-				print(obj)
 				ops.append(
 					self.esi_app.op[endpoint](**obj)
 				)
