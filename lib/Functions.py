@@ -246,13 +246,14 @@ class Functions:
 					# if len(blueprints) == 0:
 					# 		hasMorePages = False
 							# continue
-					bps[blueprints["item_id"]] = {
-											"location": blueprints["location_id"] if "location_id" in blueprints else "0", 
-											"type": blueprints["quantity"], 
-											"type_id": blueprints["type_id"], 
-											"me": blueprints["material_efficiency"],
-											"te": blueprints["time_efficiency"]
-											}
+					for bp in blueprints:
+						bps[bp["item_id"]] = {
+												"location": bp["location_id"],
+												"type": bp["quantity"], 
+												"type_id": bp["type_id"], 
+												"me": bp["material_efficiency"],
+												"te": bp["time_efficiency"]
+												}
 						# for asset in assetList:
 						# 	if asset["location_id"] < 69999999:
 						# 		itemList.add(asset["location_id"])
