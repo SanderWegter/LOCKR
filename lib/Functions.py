@@ -223,6 +223,38 @@ class Functions:
 		corpID = self.getCorpID()
 		citadels = set()
 		itemList = set()
+
+		#Get blueprints
+		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+		for r in cur.fetchall():
+			charID,refreshToken = r
+			self.esi.subToken(refreshToken)
+			self.esi.getForceRefresh()
+			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+			baseroles = roles["roles"]
+			if "Director" in baseroles:
+				page = 1
+				hasMorePages = True
+				while hasMorePages:
+					blueprints = self.esi.getESIInfo('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
+					if len(blueprints) == 0:
+						hasMorePages = False
+						continue
+					print(json.dumps(blueprints,indent=4))
+					# for asset in assetList:
+					# 	if asset["location_id"] < 69999999:
+					# 		itemList.add(asset["location_id"])
+					# 	else:
+					# 		citadels.add(asset["location_id"])
+
+					# 	if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
+					# 		officeFlags[asset["item_id"]] = asset["location_id"]
+					# 	if asset["type_id"] < 69999999:
+					# 		itemList.add(asset["type_id"])
+					# 	assets.append(asset)
+					page += 1
+				continue
+
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
 		industry = []
 		for i in industryJobs:
