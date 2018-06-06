@@ -247,8 +247,11 @@ class Functions:
 					# 		hasMorePages = False
 							# continue
 					print(blueprints)
-					for bp in blueprints:
-						print(bp)
+					for resp in blueprints:
+						try:
+							bp = resp["response"]
+						except:
+							continue
 						bps[bp["item_id"]] = {
 												"location": bp["location_id"],
 												"type": bp["quantity"], 
