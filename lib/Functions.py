@@ -246,8 +246,9 @@ class Functions:
 					# if len(blueprints) == 0:
 					# 		hasMorePages = False
 							# continue
-					print(blueprints)
 					for resp in blueprints:
+						print(resp)
+						print(resp["response"])
 						try:
 							bp = resp["response"]
 						except:
