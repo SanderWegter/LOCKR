@@ -273,7 +273,6 @@ class Functions:
 					while hasMorePages:
 						divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
 						assetList = self.esi.getESIInfo('get_corporations_corporation_id_assets', {"corporation_id": corpID, "page": page})
-						assetNameList = self.esi.getESIInfo('get_corporation_corporation_id_assets_names',{'corporation_id': corpID})
 						if len(assetList) == 0:
 							hasMorePages = False
 							continue
@@ -296,9 +295,11 @@ class Functions:
 					officeFlags[k] = officeFlags[officeFlags[k]]
 				except:
 					pass
-
+			assetNames = {}
 			nw = []
 			for a in assets:
+				aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
+				a["itemName"] = aName
 				if a["location_id"] in officeFlags:
 					a["location_id"] = officeFlags[a["location_id"]]
 					if a["location_id"] < 69999999:
