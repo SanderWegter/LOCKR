@@ -70,8 +70,9 @@ class ESI:
 
 			ops = []
 			for page in range(1, number_of_pages):
+				obj["page"] = page
 				ops.append(
-					self.esi_app.op[endpoint](**obj, page=page)
+					self.esi_app.op[endpoint](**obj)
 				)
 			results = self.client.multi_request(ops)
 			return results
