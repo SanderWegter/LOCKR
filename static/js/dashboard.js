@@ -46,7 +46,7 @@ function getIndustry(){
 					table = "None"
 			}
 			var bpobpc = ""
-			if (v.activity_id == 1){
+			if (v.activity_id == 1 && bps[v.blueprint_id] != undefined){
 				console.log(bps[v.blueprint_id])
 				if (bps[v.blueprint_id].type == -1 || bps[v.blueprint_id].type > 0){
 					bpobpc = " - BPO"
