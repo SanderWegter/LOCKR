@@ -497,6 +497,7 @@ class Functions:
 		return
 
 	def updateAllData(self):
+		print("Starting update")
 		self.translations = {}
 		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 		for r in cur.fetchall():
@@ -512,4 +513,5 @@ class Functions:
 				self.updateMoonMining()
 				self.updateContracts()
 				break
+		print("Finished update")
 		return

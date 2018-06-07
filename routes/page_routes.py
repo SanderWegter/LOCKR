@@ -5,17 +5,7 @@ from time import time
 
 from nav import navigation_bar
 
-from apscheduler.scheduler import Scheduler
-
-sched = Scheduler()
-sched.start()
-
 functions = Functions()
-
-def testUpdate():
-	functions.updateAllData()
-
-job = sched.add_cron_job(testUpdate, minute="*/10")
 
 def requires_auth(f):
 	@wraps(f)
