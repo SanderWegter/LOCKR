@@ -400,6 +400,9 @@ class Functions:
 					self.translations.append(asset["type_id"])
 				assets.append(asset)
 
+		self.updateOfficeFlags()
+		officeFlags = self.officeFlags
+
 		nw = []
 		for a in assets:
 			group_id = self.esi.getESIInfo('get_universe_types_type_id',{'type_id': a["type_id"]})
@@ -502,15 +505,14 @@ class Functions:
 				self.updateCorpAssets(corpID)
 				self.updateMoonMining(corpID)
 				self.updateContracts(corpID)
-				self.updateTranslations()
 				self.updateOfficeFlags()
 				self.updateDivisions(corpID)
+				self.updateTranslations()
 				break
 			if "Factory_Manager" in baseroles:
 				self.updateIndustryJobs(corpID)
-				self.updateTranslations()
 				self.updateOfficeFlags()
-				self.updateDivisions(corpID)
+				self.updateTranslations()
 		print("Finished update")
 		self.isRefreshing = False
 		self.lastUpdate = int(time.time())
