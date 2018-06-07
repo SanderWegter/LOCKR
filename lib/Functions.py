@@ -438,6 +438,7 @@ class Functions:
 		return {}
 
 	def updateIndustryJobs(self, corpID):
+		print("Industryjobs")
 		industry = self.industryJobs
 		
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
@@ -471,6 +472,7 @@ class Functions:
 		return
 	
 	def updateBps(self, corpID):
+		print("BPS")
 		bps = self.bps
 		blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
 		for p in blueprints:
@@ -485,11 +487,13 @@ class Functions:
 		self.bps = bps
 
 	def updateDivisions(self, corpID):
+		print("Divisions")
 		divisions = self.divisions
 		divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
 		self.divisions = divisions
 
 	def updateCorpAssets(self, corpID):
+		print("Assets")
 		assets = []
 		assetNames = {}
 		citadels = set()
@@ -539,12 +543,15 @@ class Functions:
 		return
 
 	def updateContracts(self, corpID):
+		print("Contracts")
 		return
 	
 	def updateMoonMining(self, corpID):
+		print("Moonmining")
 		return
 
 	def updateTranslations(self):
+		print("Translations")
 		if len(self.translations)>0:
 			cur = self.db.query("SELECT idnum,name,marketGroup FROM itemLookup")
 			row = cur.fetchall()
@@ -576,6 +583,7 @@ class Functions:
 		return
 
 	def updateOfficeFlags(self):
+		print("Officeflags")
 		for k in self.officeFlags:
 			try:
 				self.officeFlags[k] = self.officeFlags[self.officeFlags[k]]
