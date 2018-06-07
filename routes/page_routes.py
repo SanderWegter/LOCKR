@@ -5,8 +5,6 @@ from time import time
 
 from nav import navigation_bar
 
-functions = Functions()
-
 def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
@@ -26,6 +24,8 @@ def requires_admin(f):
 	return decoracted_admin
 
 page_routes = Blueprint('page_routes', __name__, template_folder='templates')
+
+functions = Functions()
 
 #Main routes
 @page_routes.route('/')

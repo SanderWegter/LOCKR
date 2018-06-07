@@ -4,10 +4,17 @@ from lib.Functions import Functions
 from lib.Database import Database
 import json
 import datetime
+import threading
+import time
 
 def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
+		print("Will be called",functions.lastUpdate,functions.isRefreshing)
+		if not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 120:
+			t = threading.Thread(target=functions.updateAllData)
+			t.start()
+			#functions.updateAllData()
 		if not functions.isLoggedIn():
 			return redirect(url_for('page_routes.login', secure_uri=functions.getAuthURI()))
 		return f(*args, **kwargs)
@@ -82,3 +89,8 @@ def updatePrice():
 @requires_auth
 def getMoonMining():
 	return json.dumps(functions.getMoonMining())
+
+@internal_routes.route("/internal/users/getRefreshingStatus")
+@requires_auth
+def getRefreshingStatus():
+	return json.dumps(functions.getRefreshingStatus())

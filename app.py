@@ -15,32 +15,10 @@ from routes.internal_routes import internal_routes
 #Fix logging when using Nginx
 from werkzeug.contrib.fixers import ProxyFix
 
-from lib.Functions import Functions
-
-from flask_apscheduler import APScheduler
-
-class ConfigSched(object):
-	JOBS = [
-        {
-            'id': 'job1',
-            'func': 'app:updateInterval',
-            'trigger': 'interval',
-            'seconds': 120
-        }
-    ]
-
-def updateInterval():
-	Functions().updateAllData()	
-
 app = Flask(__name__)
 app.register_blueprint(page_routes)
 app.register_blueprint(internal_routes)
 app.wsgi_app = ProxyFix(app.wsgi_app)
-
-app.config.from_object(ConfigSched())
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
 
 #Favicon
 @app.route('/favicon.ico')

@@ -14,6 +14,8 @@ class Functions:
 		self.esi = ESI()
 		self.config = Config()
 		self.admins = self.config.getConfig()["settings"]["admins"]
+		self.lastUpdate = 0
+		self.isRefreshing = False
 		self.corpCache = 0
 		self.corpAssets = []
 		self.itemTranslations = {}
@@ -436,19 +438,8 @@ class Functions:
 		return {}
 
 	def updateIndustryJobs(self, corpID):
-		bps = self.bps
 		industry = self.industryJobs
-		blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
-		for p in blueprints:
-			for bp in p[1].data:
-				bps[bp["item_id"]] = {
-									"location": bp["location_id"],
-									"type": bp["quantity"], 
-									"type_id": bp["type_id"], 
-									"me": bp["material_efficiency"],
-									"te": bp["time_efficiency"]
-									}
-
+		
 		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
 		industry = []
 		citadels = set()
@@ -476,29 +467,129 @@ class Functions:
 				else:
 					self.itemTranslations[s] = "Unknown - No permissions"
 
-		self.bps = bps
 		self.industryJobs = industry
 		return
 	
-	def updateCorpAssets(self):
+	def updateBps(self, corpID):
+		bps = self.bps
+		blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
+		for p in blueprints:
+			for bp in p[1].data:
+				bps[bp["item_id"]] = {
+									"location": bp["location_id"],
+									"type": bp["quantity"], 
+									"type_id": bp["type_id"], 
+									"me": bp["material_efficiency"],
+									"te": bp["time_efficiency"]
+									}
+		self.bps = bps
+
+	def updateDivisions(self, corpID):
+		divisions = self.divisions
+		divisions = self.esi.getESIInfo('get_corporations_corporation_id_divisions',{"corporation_id": corpID})
+		self.divisions = divisions
+
+	def updateCorpAssets(self, corpID):
+		assets = []
+		assetNames = {}
+		citadels = set()
+		officeFlags = self.officeFlags
+		assetList = self.esi.getESIInfoMP('get_corporations_corporation_id_assets', {"corporation_id": corpID})
+		for a in assetList:
+			for asset in a[1].data:
+				if asset["location_id"] < 69999999:
+					self.translations.append(asset["location_id"])
+				else:
+					citadels.add(asset["location_id"])
+				
+				if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
+					officeFlags[asset["item_id"]] = asset["location_id"]
+				if asset["type_id"] < 69999999:
+					self.translations.append(asset["type_id"])
+				assets.append(asset)
+
+		nw = []
+		for a in assets:
+			group_id = self.esi.getESIInfo('get_universe_types_type_id',{'type_id': a["type_id"]})
+			if group_id["group_id"] in self.accepted_groups:
+				aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
+				try:
+					assetNames[a["item_id"]] = aName[0]["name"]
+					a["itemName"] = aName[0]["name"]
+				except:
+					pass
+			if a["location_id"] in officeFlags:
+				a["orig_location_id"] = a["location_id"]
+				a["location_id"] = officeFlags[a["location_id"]]
+				if a["location_id"] < 69999999:
+					self.translations.append(a["location_id"])
+				else:
+					citadels.add(a["location_id"])
+			nw.append(a)
+
+		self.corpAssets = nw
+
+		if len(citadels) > 0:
+			for s in citadels:
+				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+				if "name" in citadelInfo:
+					self.itemTranslations[s] = citadelInfo["name"]
+				else:
+					self.itemTranslations[s] = "Unknown - No permissions"
 		return
 
-	def updateContracts(self):
+	def updateContracts(self, corpID):
 		return
 	
-	def updateMoonMining(self):
+	def updateMoonMining(self, corpID):
 		return
 
 	def updateTranslations(self):
 		if len(self.translations)>0:
+			cur = self.db.query("SELECT idnum,name,marketGroup FROM itemLookup")
+			row = cur.fetchall()
+			for r in row:
+				try:
+					self.translations.remove(r[0])
+				except:
+					pass
+				self.itemTranslations[r[0]] = {'name': r[1], 'group': r[2]}
+				
 			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": self.translations})
 			for i in itemTranslation:
-				self.itemTranslations[i["id"]] = i["name"]
+				itemTypeLookup = self.esi.getESIInfo('get_universe_types_type_id',{"type_id": i["id"]})
+				marketGroupName = ["Unknown"]
+				if "market_group_id" in itemTypeLookup:
+					marketGroupName = []
+					marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": itemTypeLookup["market_group_id"]})
+					while "parent_group_id" in marketGroup:
+						marketGroupName.append(marketGroup["name"])
+						marketGroup = self.esi.getESIInfo('get_markets_groups_market_group_id',{"market_group_id": marketGroup["parent_group_id"]})
+					marketGroupName.reverse()
+					marketGroupName = " > ".join(marketGroupName)
+					self.itemTranslations[i["id"]] = {"name": i["name"], "group": marketGroupName}
+					cur = self.db.query("DELETE FROM itemLookup WHERE idnum = %s",[i["id"]])
+					cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[i['id'],i['name'],marketGroupName])
+				else:
+					self.itemTranslations[i["id"]] = {"name": i["name"], "group": marketGroupName}
+
 		return
+
+	def updateOfficeFlags(self):
+		for k in self.officeFlags:
+			try:
+				self.officeFlags[k] = self.officeFlags[self.officeFlags[k]]
+			except:
+				pass
+		return
+
+	def getRefreshingStatus(self):
+		return {"isRefreshing": self.isRefreshing, "time": self.lastUpdate}
 
 	def updateAllData(self):
 		print("Starting update")
-		self.translations = {}
+		self.isRefreshing = True
+		self.translations = []
 		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 		for r in cur.fetchall():
 			charID,refreshToken = r
@@ -506,12 +597,25 @@ class Functions:
 			self.esi.getForceRefresh()
 			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
 			baseroles = roles["roles"]
+			#corpID = self.getCorpID()
+			charInfo = self.esi.getESIInfo('get_characters_character_id',{"character_id": charID})
+			corpID = charInfo["corporation_id"]
 			if "Director" in baseroles:
-				corpID = self.getCorpID()
 				self.updateIndustryJobs(corpID)
-				self.updateCorpAssets()
-				self.updateMoonMining()
-				self.updateContracts()
+				self.updateBps(corpID)
+				self.updateCorpAssets(corpID)
+				self.updateMoonMining(corpID)
+				self.updateContracts(corpID)
+				self.updateTranslations()
+				self.updateOfficeFlags()
+				self.updateDivisions(corpID)
 				break
+			if "Factory_Manager" in baseroles:
+				self.updateIndustryJobs(corpID)
+				self.updateTranslations()
+				self.updateOfficeFlags()
+				self.updateDivisions(corpID)
 		print("Finished update")
+		self.isRefreshing = False
+		self.lastUpdate = int(time.time())
 		return

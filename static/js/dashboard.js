@@ -56,8 +56,8 @@ function getIndustry(){
 			}
 			$(".industry"+table+"List").append("\
 								<tr>\
-									<td><img src='https://image.eveonline.com/Type/"+v.blueprint_type_id+"_32.png'><br>"+translations[v.blueprint_type_id]+""+bpobpc+"</td>\
-									<td><img src='https://image.eveonline.com/Character/"+v.installer_id+"_32.jpg'><br>"+translations[v.installer_id]+"</td>\
+									<td><img src='https://image.eveonline.com/Type/"+v.blueprint_type_id+"_32.png'><br>"+translations[v.blueprint_type_id].name+""+bpobpc+"</td>\
+									<td><img src='https://image.eveonline.com/Character/"+v.installer_id+"_32.jpg'><br>"+translations[v.installer_id].name+"</td>\
 									<td>"+translations[v.location_id]+"</td>\
 									<td>"+activities[v.activity_id]+"<br>Runs: "+v.runs+"/"+v.licensed_runs+"</td>\
 									<td>"+convertDate(startTime)+"</td>\
