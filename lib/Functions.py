@@ -23,6 +23,9 @@ class Functions:
 		self.priceUpdateCache = 0
 		self.bpCache = 0
 		self.bps = {}
+		self.industryJobs = []
+		self.translations = []
+		self.itemTranslations = {}
 		self.accepted_groups = [
 			12 # cargo containers
 		]
@@ -222,67 +225,7 @@ class Functions:
 		return {"open": openorders, "history": history, "itemTranslation": itemTranslation}
 
 	def getIndustryJobs(self):
-		corpID = self.getCorpID()
-		citadels = set()
-		itemList = set()
-		bps = self.bps
-		
-		#Get blueprints
-		if int(time.time() - self.bpCache) > 10:
-			self.bpCache = int(time.time())
-			cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
-			for r in cur.fetchall():
-				charID,refreshToken = r
-				self.esi.subToken(refreshToken)
-				self.esi.getForceRefresh()
-				roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
-				baseroles = roles["roles"]
-				if "Director" in baseroles:
-					blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
-					for p in blueprints:
-						for bp in p[1].data:
-							bps[bp["item_id"]] = {
-												"location": bp["location_id"],
-												"type": bp["quantity"], 
-												"type_id": bp["type_id"], 
-												"me": bp["material_efficiency"],
-												"te": bp["time_efficiency"]
-												}
-					
-					continue
-
-		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
-		industry = []
-		for i in industryJobs:
-			if "end_date" in i:
-				i["end_date"] = int(time.mktime(time.strptime(str(i["end_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
-			if "start_date" in i:
-				i["start_date"] = int(time.mktime(time.strptime(str(i["start_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
-			if "blueprint_type_id" in i:
-				itemList.add(i["blueprint_type_id"])
-			if "installer_id" in i:
-				itemList.add(i["installer_id"])
-			
-			if i["blueprint_location_id"] < 69999999:
-				itemList.add(i["location_id"])
-			else:
-				citadels.add(i["location_id"])
-			industry.append(i)
-
-		itemTranslations = {}
-		if len(itemList)>0:
-			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": itemList})
-			for i in itemTranslation:
-				itemTranslations[i['id']] = i["name"]
-		if len(citadels)>0:
-			for s in citadels:
-				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
-				if "name" in citadelInfo:
-					itemTranslations[s] = citadelInfo["name"]
-				else:
-					itemTranslations[s] = "Unknown - No permissions"
-		self.bps = bps
-		return {"jobs":industry, "translations": itemTranslations, "bps": bps}
+		return {"jobs": self.industryJobs, "translations": self.itemTranslations, "bps": self.bps}
 
 	def getCorpAssets(self):
 		assets = self.corpAssets
@@ -491,3 +434,82 @@ class Functions:
 				mining = self.esi.getESIInfo("get_corporation_corporation_id_mining_extractions",{"corporation_id": corpID})
 				print(mining)
 		return {}
+
+	def updateIndustryJobs(self, corpID):
+		bps = self.bps
+		industry = self.industryJobs
+		blueprints = self.esi.getESIInfoMP('get_corporations_corporation_id_blueprints',{"corporation_id": corpID})
+		for p in blueprints:
+			for bp in p[1].data:
+				bps[bp["item_id"]] = {
+									"location": bp["location_id"],
+									"type": bp["quantity"], 
+									"type_id": bp["type_id"], 
+									"me": bp["material_efficiency"],
+									"te": bp["time_efficiency"]
+									}
+
+		industryJobs = self.esi.getESIInfo('get_corporations_corporation_id_industry_jobs', {"corporation_id": corpID})
+		industry = []
+		citadels = set()
+		for i in industryJobs:
+			if "end_date" in i:
+				i["end_date"] = int(time.mktime(time.strptime(str(i["end_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "start_date" in i:
+				i["start_date"] = int(time.mktime(time.strptime(str(i["start_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "blueprint_type_id" in i:
+				self.translations.append(i["blueprint_type_id"])
+			if "installer_id" in i:
+				self.translations.append(i["installer_id"])
+			
+			if i["blueprint_location_id"] < 69999999:
+				self.translations.append(i["location_id"])
+			else:
+				citadels.add(i["location_id"])
+			industry.append(i)
+
+		if len(citadels) > 0:
+			for s in citadels:
+				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+				if "name" in citadelInfo:
+					self.itemTranslations[s] = citadelInfo["name"]
+				else:
+					self.itemTranslations[s] = "Unknown - No permissions"
+
+		self.bps = bps
+		self.industryJobs = industry
+		return
+	
+	def updateCorpAssets(self):
+		return
+
+	def updateContracts(self):
+		return
+	
+	def updateMoonMining(self):
+		return
+
+	def updateTranslations(self):
+		if len(self.translations)>0:
+			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": self.translations})
+			for i in itemTranslation:
+				self.itemTranslations[i["id"]] = i["name"]
+		return
+
+	def updateAllData(self):
+		self.translations = {}
+		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+		for r in cur.fetchall():
+			charID,refreshToken = r
+			self.esi.subToken(refreshToken)
+			self.esi.getForceRefresh()
+			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+			baseroles = roles["roles"]
+			if "Director" in baseroles:
+				corpID = self.getCorpID()
+				self.updateIndustryJobs(corpID)
+				self.updateCorpAssets()
+				self.updateMoonMining()
+				self.updateContracts()
+				break
+		return
