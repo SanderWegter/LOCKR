@@ -476,3 +476,18 @@ class Functions:
 				sell = r["sell"]["fivePercent"]
 				cur = self.db.query("UPDATE priceLookup SET iskBuy = %s, iskSell = %s WHERE typeID = %s",[buy,sell,typeID])
 		return {}
+
+	def getMoonMining(self):
+		corpID = self.getCorpID()
+		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
+		for r in cur.fetchall():
+			charID,refreshToken = r
+			self.esi.subToken(refreshToken)
+			self.esi.getForceRefresh()
+			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
+			baseroles = roles["roles"]
+			print(baseroles)
+			if "Structure_Manager" in baseroles or "Director" in baseroles:
+				mining = self.esi.getESIInfo("get_corporation_corporation_id_mining_extractions",{"corporation_id": corpID})
+				print(mining)
+		return {}

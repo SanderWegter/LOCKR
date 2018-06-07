@@ -86,6 +86,44 @@ def pricing():
 		ts=str(int(time()))
 		)
 
+@page_routes.route('/mining')
+@requires_auth
+def mining():
+	notification = {}
+	if "notification" in session:
+		notification = {
+			"message": session["notification"],
+			"type": session["notificationtype"]
+		}
+		session.pop("notification")
+		session.pop("notificationtype")
+	return render_template(
+		'mining.html',
+		title="Mining",
+		notification=notification,
+		navigation_bar=navigation_bar,
+		ts=str(int(time()))
+		)
+
+@page_routes.route('/contracts')
+@requires_auth
+def contracts():
+	notification = {}
+	if "notification" in session:
+		notification = {
+			"message": session["notification"],
+			"type": session["notificationtype"]
+		}
+		session.pop("notification")
+		session.pop("notificationtype")
+	return render_template(
+		'contracts.html',
+		title="Contracts",
+		notification=notification,
+		navigation_bar=navigation_bar,
+		ts=str(int(time()))
+		)
+
 @page_routes.route('/login', methods=["GET","POST"])
 def login():
 	notification = {}
@@ -138,5 +176,6 @@ def admin():
 		'admin.html',
 		title="Admin page",
 		navigation_bar=navigation_bar,
+		notification=notification,
 		ts=str(int(time()))
 		)

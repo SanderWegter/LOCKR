@@ -9,7 +9,7 @@ def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
 		if not functions.isLoggedIn():
-			return redirect(url_for('page_routes.login', secure_uri=esi.getAuthURI()))
+			return redirect(url_for('page_routes.login', secure_uri=functions.getAuthURI()))
 		return f(*args, **kwargs)
 	return decorated_auth
 
@@ -77,3 +77,8 @@ def delMarketItem(itemID):
 @requires_admin
 def updatePrice():
 	return json.dumps(functions.updatePrice())
+
+@internal_routes.route("/internal/mining/getMoonMining")
+@requires_auth
+def getMoonMining():
+	return json.dumps(functions.getMoonMining())
