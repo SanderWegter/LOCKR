@@ -11,7 +11,7 @@ def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
 		print("Will be called",functions.lastUpdate,functions.isRefreshing)
-		if not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 120:
+		if not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
 			t = threading.Thread(target=functions.updateAllData)
 			t.start()
 			#functions.updateAllData()

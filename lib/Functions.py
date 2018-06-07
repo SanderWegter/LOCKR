@@ -409,7 +409,7 @@ class Functions:
 			if group_id["group_id"] in self.accepted_groups:
 				aName = self.esi.getESIInfo('post_corporations_corporation_id_assets_names',{'corporation_id': corpID, "item_ids": [a['item_id']]})
 				try:
-					assetNames[a["item_id"]] = aName[0]["name"]
+					self.assetNames[a["item_id"]] = aName[0]["name"]
 					a["itemName"] = aName[0]["name"]
 				except:
 					pass
