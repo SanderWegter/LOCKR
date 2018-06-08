@@ -6,7 +6,7 @@ function getProduction(){
             $.each(v, function(key,val){
                 if (val.stock >= val.quantity){
                     stockquan = "<font color='green'>"+val.stock+"/"+val.quantity+"</font>"
-                    maxproducable.append(Math.floor(val.stock / val.quantity))
+                    maxproducable.push(Math.floor(val.stock / val.quantity))
                     producable = "<br>"+Math.floor(val.stock / val.quantity)
                 }
                 else{
