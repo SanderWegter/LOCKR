@@ -624,13 +624,13 @@ class Functions:
 				self.updateStructures(corpID)
 				self.updateTranslations()
 				break
-			if "Factory_Manager" in baseroles:
-				self.updateIndustryJobs(corpID)
-				self.updateOfficeFlags()
-				self.updatePrices()
-				self.updateContracts(corpID)
-				self.updateProduction()
-				self.updateTranslations()
+			# if "Factory_Manager" in baseroles:
+			# 	self.updateIndustryJobs(corpID)
+			# 	self.updateOfficeFlags()
+			# 	self.updatePrices()
+			# 	self.updateContracts(corpID)
+			# 	self.updateProduction()
+			# 	self.updateTranslations()
 		print("Finished update")
 		self.isRefreshing = False
 		self.lastUpdate = int(time.time())
