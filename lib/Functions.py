@@ -369,8 +369,6 @@ class Functions:
 					self.translations.add(asset["type_id"])
 				assets.append(asset)
 
-		print(assets)
-
 		self.updateOfficeFlags()
 		officeFlags = self.officeFlags
 
@@ -391,6 +389,7 @@ class Functions:
 					self.translations.add(a["location_id"])
 				else:
 					citadels.add(a["location_id"])
+			print(a)
 			nw.append(a)
 
 		self.corpAssets = nw
