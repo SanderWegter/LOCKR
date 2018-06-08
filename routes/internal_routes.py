@@ -11,7 +11,8 @@ def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
 		print("Will be called",functions.lastUpdate,functions.isRefreshing)
-		if not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
+		if threading.activeCount() <= 2 and not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
+			print("threading count: ",threading.activeCount())
 			t = threading.Thread(target=functions.updateAllData)
 			t.start()
 			#functions.updateAllData()
@@ -89,6 +90,21 @@ def updatePrice():
 @requires_auth
 def getMoonMining():
 	return json.dumps(functions.getMoonMining())
+
+@internal_routes.route("/internal/production/getProduction")
+@requires_auth
+def getProduction():
+	return json.dumps(functions.getProduction())
+
+@internal_routes.route("/internal/structures/getStructures")
+@requires_auth
+def getStructures():
+	return json.dumps(functions.getStructures())
+
+@internal_routes.route("/internal/contracts/getContracts")
+@requires_auth
+def getContracts():
+	return json.dumps(functions.getContracts())
 
 @internal_routes.route("/internal/users/getRefreshingStatus")
 @requires_auth

@@ -29,7 +29,17 @@ class Database:
 			try:
 				cursor.execute(sql,args)
 			except MySQLdb.Error as e:
+				print("-------")
 				print(e)
+				print("-------")
+				cursor.close()
+				self.connect()
+				cursor = self.conn.cursor()
+				try:
+					cursor.execute(sql, args)
+				except MySQLdb.Error as e:
+					print("NONONONO")
+					
 		return cursor
 
 	def queryMany(self, sql, args=None):

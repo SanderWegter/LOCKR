@@ -124,6 +124,44 @@ def contracts():
 		ts=str(int(time()))
 		)
 
+@page_routes.route('/production')
+@requires_auth
+def production():
+	notification = {}
+	if "notification" in session:
+		notification = {
+			"message": session["notification"],
+			"type": session["notificationtype"]
+		}
+		session.pop("notification")
+		session.pop("notificationtype")
+	return render_template(
+		'production.html',
+		title="Production",
+		notification=notification,
+		navigation_bar=navigation_bar,
+		ts=str(int(time()))
+		)
+
+@page_routes.route('/structures')
+@requires_auth
+def structures():
+	notification = {}
+	if "notification" in session:
+		notification = {
+			"message": session["notification"],
+			"type": session["notificationtype"]
+		}
+		session.pop("notification")
+		session.pop("notificationtype")
+	return render_template(
+		'structures.html',
+		title="Structures",
+		notification=notification,
+		navigation_bar=navigation_bar,
+		ts=str(int(time()))
+		)
+
 @page_routes.route('/login', methods=["GET","POST"])
 def login():
 	notification = {}

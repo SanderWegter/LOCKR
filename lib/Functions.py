@@ -26,8 +26,13 @@ class Functions:
 		self.bpCache = 0
 		self.bps = {}
 		self.industryJobs = []
-		self.translations = []
+		self.translations = set()
 		self.itemTranslations = {}
+		self.prices = {}
+		self.production = {}
+		self.structures = {}
+		self.contracts = {}
+		self.miningInfo = {}
 		self.accepted_groups = [
 			12 # cargo containers
 		]
@@ -247,39 +252,7 @@ class Functions:
 		return {}
 
 	def getPricingInfo(self):
-		cur = self.db.query("SELECT typeID, iskBuy, iskSell FROM priceLookup")
-		translation = set()
-		prices = {}
-		for r in cur.fetchall():
-			translation.add(r[0])
-			prices[r[0]] = {"iskBuy": r[1], "iskSell": r[2], "materials": {}}
-		itemTranslations = {}
-		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": translation})
-		for i in itemTranslation:
-			itemTranslations[i["id"]] = {"name": i["name"]}
-
-		translation = set()
-
-		for p in prices:
-			bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
-			try:
-				bpID = bpItemID["inventory_type"]
-				cur = self.db.query("SELECT materialTypeID, quantity FROM industryActivityMaterials WHERE activityID = %s AND typeID = %s",[1,bpID])
-				res = cur.fetchall()
-				if len(res)>0:
-					for m in res:
-						translation.add(m[0])
-						USED_ME = 5
-						mats = math.ceil((m[1] * ((99)/100) * ((100-USED_ME)/100)))
-						prices[p]["materials"].update({m[0]: mats})
-			except:
-				pass
-
-		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": translation})
-		for i in itemTranslation:
-			itemTranslations[i["id"]] = {"name": i["name"]}
-
-		return {"items":prices, "translations": itemTranslations}
+		return {"items": self.prices, "translations": self.itemTranslations}
 
 	def delMarketItem(self, itemID):
 		self.db.query("DELETE FROM priceLookup WHERE typeID = %s",[itemID])
@@ -310,21 +283,18 @@ class Functions:
 				cur = self.db.query("UPDATE priceLookup SET iskBuy = %s, iskSell = %s WHERE typeID = %s",[buy,sell,typeID])
 		return {}
 
+	def getContracts(self):
+		return {"contracts": self.contracts, "translations": self.itemTranslations}
+	
 	def getMoonMining(self):
-		corpID = self.getCorpID()
-		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
-		for r in cur.fetchall():
-			charID,refreshToken = r
-			self.esi.subToken(refreshToken)
-			self.esi.getForceRefresh()
-			roles = self.esi.getESIInfo('get_characters_character_id_roles',{"character_id": charID})
-			baseroles = roles["roles"]
-			print(baseroles)
-			if "Structure_Manager" in baseroles or "Director" in baseroles:
-				mining = self.esi.getESIInfo("get_corporation_corporation_id_mining_extractions",{"corporation_id": corpID})
-				print(mining)
-		return {}
+		return {"mining": self.miningInfo}
 
+	def getProduction(self):
+		return {"production": self.production, "translations": self.itemTranslations}
+
+	def getStructures(self):
+		return {"structures": self.structures}
+	
 	def updateIndustryJobs(self, corpID):
 		print("Industryjobs")
 		industry = self.industryJobs
@@ -338,12 +308,12 @@ class Functions:
 			if "start_date" in i:
 				i["start_date"] = int(time.mktime(time.strptime(str(i["start_date"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
 			if "blueprint_type_id" in i:
-				self.translations.append(i["blueprint_type_id"])
+				self.translations.add(i["blueprint_type_id"])
 			if "installer_id" in i:
-				self.translations.append(i["installer_id"])
+				self.translations.add(i["installer_id"])
 			
 			if i["blueprint_location_id"] < 69999999:
-				self.translations.append(i["location_id"])
+				self.translations.add(i["location_id"])
 			else:
 				citadels.add(i["location_id"])
 			industry.append(i)
@@ -383,21 +353,20 @@ class Functions:
 	def updateCorpAssets(self, corpID):
 		print("Assets")
 		assets = []
-		assetNames = {}
 		citadels = set()
 		officeFlags = self.officeFlags
 		assetList = self.esi.getESIInfoMP('get_corporations_corporation_id_assets', {"corporation_id": corpID})
 		for a in assetList:
 			for asset in a[1].data:
 				if asset["location_id"] < 69999999:
-					self.translations.append(asset["location_id"])
+					self.translations.add(asset["location_id"])
 				else:
 					citadels.add(asset["location_id"])
 				
 				if asset["location_flag"] == "OfficeFolder" or "CorpSAG" in asset["location_flag"]:
 					officeFlags[asset["item_id"]] = asset["location_id"]
 				if asset["type_id"] < 69999999:
-					self.translations.append(asset["type_id"])
+					self.translations.add(asset["type_id"])
 				assets.append(asset)
 
 		self.updateOfficeFlags()
@@ -417,7 +386,7 @@ class Functions:
 				a["orig_location_id"] = a["location_id"]
 				a["location_id"] = officeFlags[a["location_id"]]
 				if a["location_id"] < 69999999:
-					self.translations.append(a["location_id"])
+					self.translations.add(a["location_id"])
 				else:
 					citadels.add(a["location_id"])
 			nw.append(a)
@@ -435,10 +404,66 @@ class Functions:
 
 	def updateContracts(self, corpID):
 		print("Contracts")
+		citadels = set()
+		contracts = self.contracts
+		contractList = self.esi.getESIInfoMP('get_corporations_corporation_id_contracts', {"corporation_id": corpID})
+		for c in contractList:
+			for contract in c[1].data:
+				contracts[contract["contract_id"]] = contract
+
+		for c in contracts:
+			if "date_expired" in contracts[c]:
+				contracts[c]["date_expired"] = int(time.mktime(time.strptime(str(contracts[c]["date_expired"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "date_issued" in contracts[c]:
+				contracts[c]["date_issued"] = int(time.mktime(time.strptime(str(contracts[c]["date_issued"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "date_completed" in contracts[c]:
+				contracts[c]["date_completed"] = int(time.mktime(time.strptime(str(contracts[c]["date_completed"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "date_accepted" in contracts[c]:
+				contracts[c]["date_accepted"] = int(time.mktime(time.strptime(str(contracts[c]["date_accepted"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+
+			self.translations.add(contracts[c]["acceptor_id"])
+			if "end_location_id" in contracts[c]:
+				if contracts[c]["end_location_id"] < 69999999:
+					self.translations.add(contracts[c]["end_location_id"])
+				else:
+					citadels.add(contracts[c]["end_location_id"])
+			self.translations.add(contracts[c]["issuer_id"])
+			self.translations.add(contracts[c]["issuer_corporation_id"])
+			if "start_location_id" in contracts[c]:
+				if contracts[c]["start_location_id"] < 69999999:
+					self.translations.add(contracts[c]["start_location_id"])
+				else:
+					citadels.add(contracts[c]["start_location_id"])
+		
+		if len(citadels) > 0:
+			for s in citadels:
+				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
+				if "name" in citadelInfo:
+					self.itemTranslations[s] = citadelInfo["name"]
+				else:
+					self.itemTranslations[s] = "Unknown - No permissions"
+
+		self.contracts = contracts
 		return
 	
 	def updateMoonMining(self, corpID):
 		print("Moonmining")
+		miningVar = []
+		miningVar = self.esi.getESIInfo("get_corporation_corporation_id_mining_extractions",{"corporation_id": corpID})
+		for m in miningVar:
+			if "chunk_arrival_time" in m:
+				m["chunk_arrival_time"] = int(time.mktime(time.strptime(str(m["chunk_arrival_time"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "extraction_start_time" in m:
+				m["extraction_start_time"] = int(time.mktime(time.strptime(str(m["extraction_start_time"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+			if "natural_decay_time" in m:
+				m["natural_decay_time"] = int(time.mktime(time.strptime(str(m["natural_decay_time"]),'%Y-%m-%dT%H:%M:%S+00:00')))*1000
+		
+		observerVar = self.esi.getESIInfo("get_corporation_corporation_id_mining_observers", {"corporation_id": corpID})
+		for o in observerVar:
+			if "last_updated" in o:
+				o["last_updated"] = int(time.mktime(time.strptime(str(o["last_updated"]),'%Y-%m-%d')))*1000
+
+		self.mining = {"extractions": miningVar, "observers": observerVar}
 		return
 
 	def updateTranslations(self):
@@ -482,13 +507,98 @@ class Functions:
 				pass
 		return
 
+	def updatePrices(self):
+		tempTrans = set()
+		cur = self.db.query("SELECT typeID, iskBuy, iskSell FROM priceLookup")
+		for r in cur.fetchall():
+			self.translations.add(r[0])
+			tempTrans.add(r[0])
+			self.prices[r[0]] = {"iskBuy": r[1], "iskSell": r[2], "materials": {}}
+
+		itemTranslations = {}
+		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
+		for i in itemTranslation:
+			itemTranslations[i["id"]] = {"name": i["name"]}
+
+		for p in self.prices:
+			bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
+			try:
+				bpID = bpItemID["inventory_type"]
+				cur = self.db.query("SELECT materialTypeID, quantity FROM industryActivityMaterials WHERE activityID = %s AND typeID = %s",[1,bpID])
+				res = cur.fetchall()
+				if len(res)>0:
+					for m in res:
+						self.translations.add(m[0])
+						USED_ME = 5
+						mats = math.ceil((m[1] * ((99)/100) * ((100-USED_ME)/100)))
+						self.prices[p]["materials"].update({m[0]: mats})
+			except Exception as e:
+				pass
+		self.updatePrice()
+		return
+
+	def updateProduction(self):
+		print("Production")
+		cur = self.db.query("SELECT typeID FROM priceLookup LEFT JOIN itemLookup I ON I.idnum = typeID WHERE I.name NOT LIKE %s AND marketGroup LIKE %s",["%blueprint%","%Ships >%"])
+		
+		prods = ()
+		tempTrans = set()
+		for r in cur.fetchall():
+			tempTrans.add(r[0])
+			prods = prods + r
+
+		itemTranslations = {}
+		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
+		for i in itemTranslation:
+			itemTranslations[i["id"]] = {"name": i["name"]}
+
+		prodBP = ()
+		for p in prods:
+			bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
+			prodBP = prodBP + (bpItemID["inventory_type"][0],)
+
+		format_strings = ','.join(['%s'] * len(prodBP))
+		cur = self.db.query("SELECT typeID,materialTypeID, quantity FROM `industryActivityMaterials` WHERE `typeID` IN (%s) AND activityID = 1" % format_strings, prodBP)
+		prodMats = {}
+		for r in cur.fetchall():
+			if r[0] not in prodMats:
+				prodMats[r[0]] = {}
+			prodMats[r[0]][r[1]] = {"quantity": r[2], "stock": 0}
+
+		assets = self.corpAssets
+		
+		for a in assets:
+			for p in prodMats:
+				for i in prodMats[p]:
+					if a["type_id"] == i:
+						prodMats[p][i]["stock"] += a["quantity"]
+
+		self.production = prodMats
+		return
+	
+	def updateStructures(self, corpID):
+		print("Structures")
+		return
+	
 	def getRefreshingStatus(self):
 		return {"isRefreshing": self.isRefreshing, "time": self.lastUpdate}
 
 	def updateAllData(self):
 		print("Starting update")
+		print("Checking server status")
+		res = get("https://esi.evetech.net/latest/status/")
+		try:
+			r = res.json()
+			print(r)
+		except:
+			r = {"error": "None"}
+		
+		if "error" in r or r["players"] == 0:
+			print("Server offline.")
+			return
+
 		self.isRefreshing = True
-		self.translations = []
+		self.translations = set()
 		cur = self.db.query("SELECT charID,refreshToken FROM users WHERE LENGTH(refreshToken) > 2")
 		for r in cur.fetchall():
 			charID,refreshToken = r
@@ -507,11 +617,17 @@ class Functions:
 				self.updateContracts(corpID)
 				self.updateOfficeFlags()
 				self.updateDivisions(corpID)
+				self.updatePrices()
+				self.updateProduction()
+				self.updateStructures(corpID)
 				self.updateTranslations()
 				break
 			if "Factory_Manager" in baseroles:
 				self.updateIndustryJobs(corpID)
 				self.updateOfficeFlags()
+				self.updatePrices()
+				self.updateContracts(corpID)
+				self.updateProduction()
 				self.updateTranslations()
 		print("Finished update")
 		self.isRefreshing = False
