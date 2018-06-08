@@ -1,8 +1,6 @@
 function getProduction(){
     $.getJSON("/internal/production/getProduction", function(data){
         $.each(data.production, function(k,v){
-            console.log(k)
-            console.log(v)
             var inputMaterials = "<table><tr>"
             $.each(v, function(key,val){
                 if (val.stock > val.quantity){

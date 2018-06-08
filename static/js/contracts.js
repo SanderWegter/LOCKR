@@ -4,7 +4,6 @@ function getContracts(){
             if (v.for_corporation == false){
                 return 0
             }
-            console.log(v)
             var d = new Date();
 		    var curTime = d.getTime()
             var offset = d.getTimezoneOffset() * 60 * 1000;
@@ -36,16 +35,6 @@ function getContracts(){
         })
     })
 }
-
-/*
-<th>Created By</th>
-<th>Accepted By</th>
-<th>From location</th>
-<th>To Location</th>
-<th>Dates</th>
-<th>Price</th>
-<th>Reward</th>
-*/
 
 function convertDate(epoch) {
     var date = new Date(epoch)

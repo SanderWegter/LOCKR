@@ -12,7 +12,6 @@ def requires_auth(f):
 	def decorated_auth(*args, **kwargs):
 		print("Will be called",functions.lastUpdate,functions.isRefreshing)
 		if threading.activeCount() <= 2 and not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
-			print("threading count: ",threading.activeCount())
 			t = threading.Thread(target=functions.updateAllData)
 			t.start()
 			#functions.updateAllData()
