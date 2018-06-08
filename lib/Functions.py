@@ -389,11 +389,12 @@ class Functions:
 					self.translations.add(a["location_id"])
 				else:
 					citadels.add(a["location_id"])
-			print(a)
 			nw.append(a)
-
+		print(nw)
+		print("^nw")
 		self.corpAssets = nw
-
+		print(self.corpAssets)
+		print("^assets")
 		if len(citadels) > 0:
 			for s in citadels:
 				citadelInfo = self.esi.getESIInfo('get_universe_structures_structure_id',{"structure_id":s})
