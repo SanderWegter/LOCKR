@@ -369,6 +369,8 @@ class Functions:
 					self.translations.add(asset["type_id"])
 				assets.append(asset)
 
+		print(assets)
+
 		self.updateOfficeFlags()
 		officeFlags = self.officeFlags
 
