@@ -3,7 +3,7 @@ function getProduction(){
         $.each(data.production, function(k,v){
             var inputMaterials = "<table><tr>"
             $.each(v, function(key,val){
-                if (val.stock > val.quantity){
+                if (val.stock >= val.quantity){
                     stockquan = "<font color='green'>"+val.stock+"/"+val.quantity+"</font>"
                 }
                 else{
