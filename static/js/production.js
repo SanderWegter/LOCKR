@@ -11,6 +11,7 @@ function getProduction(){
                 }
                 else{
                     stockquan = "<font color='red'>"+val.stock+"/"+val.quantity+"</font>"
+                    maxproducable.push(0)
                     producable = ""
                 }
                 inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png'><br>"+data.translations[key].name + "<br>"+stockquan+""+producable+"</td>"
@@ -18,7 +19,7 @@ function getProduction(){
             inputMaterials += "</tr></table>"
             $(".productionList").append("\
                                             <tr>\
-                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"+data.translations[k].name+"<br>"+Math.max(...maxproducable)+"</td>\
+                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"+data.translations[k].name+"<br>"+Math.min(...maxproducable)+"</td>\
                                             <td>"+inputMaterials+"</td>\
                                             </tr>\
             ")
