@@ -2,7 +2,7 @@ from lib.Database import Database
 from lib.Config import Config
 from esipy import App, EsiClient, EsiSecurity
 from esipy.exceptions import APIException
-from flask import session
+from flask import session, redirect, url_for
 
 class ESI:
 	def __init__(self):
@@ -33,7 +33,14 @@ class ESI:
 
 	def getESIChar(self, token):
 		self.security.update_token(token)
-		self.security.refresh()
+		try:
+			self.security.refresh()
+		except APIException as e:
+			if str(e) == "HTTP Error 400: invalid_token":
+				session.pop('token',None)
+				session.pop('char', None)
+				return redirect(url_for('page_routes.logout'))
+
 		return self.security.verify()
 
 	def isVerified(self, token):

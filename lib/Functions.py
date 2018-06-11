@@ -94,9 +94,12 @@ class Functions:
 		session["isAdmin"] = False
 		if "char" in session:
 			self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
-			session["corpID"] = self.getCorpID()
-			if session["char"]["CharacterID"] in self.admins:
-				session["isAdmin"] = True
+			try:
+				session["corpID"] = self.getCorpID()
+				if session["char"]["CharacterID"] in self.admins:
+					session["isAdmin"] = True
+			except:
+				return False
 		return self.esi.isVerified(session["token"])
 
 	def logoutUser(self):
@@ -570,6 +573,10 @@ class Functions:
 				for i in prodMats[p]:
 					if a["type_id"] == i:
 						prodMats[p][i]["stock"] += a["quantity"]
+		
+		#
+		#GET INDUSTRY ITEMS => ADD THIS QUANTITY
+		#
 
 		self.production = prodMats
 		return
