@@ -564,7 +564,7 @@ class Functions:
 		for r in cur.fetchall():
 			if r[0] not in prodMats:
 				prodMats[r[0]] = {}
-			prodMats[r[0]][r[1]] = {"quantity": r[2], "stock": 0}
+			prodMats[r[0]][r[1]] = {"quantity": r[2], "stock": 0, "inbuild": 0}
 
 		assets = self.corpAssets
 		
@@ -574,6 +574,12 @@ class Functions:
 					if a["type_id"] == i:
 						prodMats[p][i]["stock"] += a["quantity"]
 		
+		inbuild = self.industryJobs
+		for job in inbuild:
+			for p in prodMats:
+				for i in prodMats[p]:
+					if job["blueprint_type_id"] == i:
+						prodMats[p][i]["inbuild"] += job["runs"]
 		#
 		#GET INDUSTRY ITEMS => ADD THIS QUANTITY
 		#
