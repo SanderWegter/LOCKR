@@ -567,7 +567,6 @@ class Functions:
 			prodMats[r[0]][r[1]] = {"quantity": r[2], "stock": 0, "inbuild": 0}
 
 		assets = self.corpAssets
-		
 		for a in assets:
 			for p in prodMats:
 				for i in prodMats[p]:
@@ -576,8 +575,11 @@ class Functions:
 		
 		inbuild = self.industryJobs
 		for job in inbuild:
+			print(job)
 			for p in prodMats:
+				print(p)
 				for i in prodMats[p]:
+					print(job["blueprint_type_id"],i)
 					if job["blueprint_type_id"] == i:
 						prodMats[p][i]["inbuild"] += job["runs"]
 		#
