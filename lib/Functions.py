@@ -575,11 +575,9 @@ class Functions:
 		
 		inbuild = self.industryJobs
 		for job in inbuild:
-			print(job)
 			for p in prodMats:
-				print(p)
 				for i in prodMats[p]:
-					print(job["blueprint_type_id"],i)
+					print(job["blueprint_type_id"],i,job["blueprint_type_id"] == i)
 					if job["blueprint_type_id"] == i:
 						prodMats[p][i]["inbuild"] += job["runs"]
 		#
