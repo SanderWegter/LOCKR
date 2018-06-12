@@ -9,7 +9,7 @@ function getProduction(){
     $(".productionList").html("")
     $.getJSON("/internal/production/getProduction", function(data){
         $.each(data.production, function(k,v){
-            var inputMaterials = "<table><tr>"
+            var inputMaterials = "<table class='table table-bordered'><tr>"
             maxproducable = []
             maxproducablebuild = []
             $.each(v, function(key,val){
@@ -33,7 +33,7 @@ function getProduction(){
                     maxproducablebuild.push(Math.floor((val.stock + val.inbuild) / (val.quantity * data.toProduce[k].quantity)))
                 }
 
-                inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png'><br>"+data.translations[key].name + "<br>"+stockquan+""+producable+"</td>"
+                inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png' title='"+data.translations[key].name+"'><br>"+stockquan+""+producable+"</td>"
             })
             
             inputMaterials += "</tr></table>"
