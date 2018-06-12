@@ -33,6 +33,7 @@ class Functions:
 		self.structures = {}
 		self.contracts = {}
 		self.miningInfo = {}
+		self.toProduce = {}
 		self.accepted_groups = [
 			12 # cargo containers
 		]
@@ -293,7 +294,7 @@ class Functions:
 		return {"mining": self.miningInfo}
 
 	def getProduction(self):
-		return {"production": self.production, "translations": self.itemTranslations}
+		return {"production": self.production, "translations": self.itemTranslations, "toProduce": self.toProduce}
 
 	def getStructures(self):
 		return {"structures": self.structures}
@@ -540,13 +541,14 @@ class Functions:
 
 	def updateProduction(self):
 		print("Production")
-		cur = self.db.query("SELECT typeID FROM priceLookup LEFT JOIN itemLookup I ON I.idnum = typeID WHERE I.name NOT LIKE %s AND marketGroup LIKE %s",["%blueprint%","%Ships >%"])
+		cur = self.db.query("SELECT typeID, toBuild FROM priceLookup LEFT JOIN itemLookup I ON I.idnum = typeID WHERE I.name NOT LIKE %s AND marketGroup LIKE %s",["%blueprint%","%Ships >%"])
 		
 		prods = ()
 		tempTrans = set()
 		for r in cur.fetchall():
 			tempTrans.add(r[0])
-			prods = prods + r
+			prods = prods + (r[0],)
+			self.toProduce[r[0]] = r[1]
 
 		itemTranslations = {}
 		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
@@ -557,6 +559,7 @@ class Functions:
 		for p in prods:
 			bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
 			prodBP = prodBP + (bpItemID["inventory_type"][0],)
+			self.toProduce[bpItemID["inventory_type"][0]] = {'quantity': self.toProduce[p], 'dbid': p}
 
 		format_strings = ','.join(['%s'] * len(prodBP))
 		cur = self.db.query("SELECT typeID,materialTypeID, quantity FROM `industryActivityMaterials` WHERE `typeID` IN (%s) AND activityID = 1" % format_strings, prodBP)
@@ -583,6 +586,19 @@ class Functions:
 		self.production = prodMats
 		return
 	
+	def setTarget(self, selID, val):
+		self.db.query("UPDATE priceLookup SET toBuild = %s WHERE typeID = %s",[val, selID])
+		for p in self.toProduce:
+			try:
+				if "dbid" in self.toProduce[p]:
+					print(self.toProduce[p])
+					if self.toProduce[p]["dbid"] == int(selID):
+						self.toProduce[p]["quantity"] = val
+						print(self.toProduce[p])
+			except:
+				continue
+		return
+
 	def updateStructures(self, corpID):
 		print("Structures")
 		return
@@ -629,13 +645,13 @@ class Functions:
 				self.updateStructures(corpID)
 				self.updateTranslations()
 				break
-			# if "Factory_Manager" in baseroles:
-			# 	self.updateIndustryJobs(corpID)
-			# 	self.updateOfficeFlags()
-			# 	self.updatePrices()
-			# 	self.updateContracts(corpID)
-			# 	self.updateProduction()
-			# 	self.updateTranslations()
+			if "Factory_Manager" in baseroles and self.config.getConfig()["server"]["debug"]:
+				self.updateIndustryJobs(corpID)
+				self.updateOfficeFlags()
+				self.updatePrices()
+				# self.updateContracts(corpID)
+				self.updateProduction()
+				self.updateTranslations()
 		print("Finished update")
 		self.isRefreshing = False
 		self.lastUpdate = int(time.time())

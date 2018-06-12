@@ -95,6 +95,12 @@ def getMoonMining():
 def getProduction():
 	return json.dumps(functions.getProduction())
 
+@internal_routes.route("/interal/production/setTarget/<selID>/<val>")
+@requires_auth
+@requires_admin
+def setTarget(selID, val):
+	return json.dumps(functions.setTarget(selID, val))
+
 @internal_routes.route("/internal/structures/getStructures")
 @requires_auth
 def getStructures():
