@@ -48,7 +48,6 @@ function getProduction(){
         $(":input[id^='dbid']").bind('keyup mouseup', function(){
             selID = (this.id).split("dbid")[1]
             val = $("#dbid"+selID).val()
-            console.log(val)
             clearTimeout(typetimer);
             typetimer = setTimeout(function(){
                 $.getJSON("/interal/production/setTarget/"+selID+"/"+val, function(){
