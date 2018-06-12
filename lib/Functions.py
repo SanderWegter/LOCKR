@@ -550,10 +550,11 @@ class Functions:
 			prods = prods + (r[0],)
 			self.toProduce[r[0]] = r[1]
 
-		itemTranslations = {}
-		itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
-		for i in itemTranslation:
-			itemTranslations[i["id"]] = {"name": i["name"]}
+		if len(tempTrans) > 0:
+			itemTranslations = {}
+			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
+			for i in itemTranslation:
+				itemTranslations[i["id"]] = {"name": i["name"]}
 
 		prodBP = ()
 		for p in prods:
@@ -591,10 +592,8 @@ class Functions:
 		for p in self.toProduce:
 			try:
 				if "dbid" in self.toProduce[p]:
-					print(self.toProduce[p])
 					if self.toProduce[p]["dbid"] == int(selID):
 						self.toProduce[p]["quantity"] = val
-						print(self.toProduce[p])
 			except:
 				continue
 		return
