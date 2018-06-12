@@ -2,7 +2,7 @@ var typetimer
 var typeinterval = 1000
 var selID = ""
 var val = ""
-
+prodParts = {}
 multipliers = {}
 
 function getProduction(){
@@ -13,6 +13,12 @@ function getProduction(){
             maxproducable = []
             maxproducablebuild = []
             $.each(v, function(key,val){
+                if (!(key in prodParts)){
+                    prodParts[key] = {'stock': 0, 'build': 0, 'required': 0}
+                }
+                prodParts[key]["stock"] = val.stock
+                prodParts[key]["build"] = data.toProduce[k].quantity
+                prodParts[key]["required"] += val.quantity * data.toProduce[k].quantity
                 multipliers[data.toProduce[k].dbid] = data.toProduce[k].quantity
                 clr = "green"
                 if (val.stock >= (val.quantity * data.toProduce[k].quantity)){
@@ -36,6 +42,7 @@ function getProduction(){
                 inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png' title='"+data.translations[key].name+"'><br>"+stockquan+""+producable+"</td>"
             })
             
+            
             inputMaterials += "</tr></table>"
             $(".productionList").append("\
                                             <tr>\
@@ -44,6 +51,14 @@ function getProduction(){
                                             <td>"+inputMaterials+"</td>\
                                             </tr>\
             ")
+        })
+        $.each(prodParts, function(k,v){
+            $(".partsList").append("<tr>\
+                                        <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'></td>\
+                                        <td>"+v.stock+"</td>\
+                                        <td>"+v.build+"</td>\
+                                        <td>"+v.required+"</td>\
+                                    </tr>")
         })
         $(":input[id^='dbid']").bind('keyup mouseup', function(){
             selID = (this.id).split("dbid")[1]
