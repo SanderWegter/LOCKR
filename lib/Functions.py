@@ -640,6 +640,7 @@ class Functions:
 				self.updateOfficeFlags()
 				self.updateDivisions(corpID)
 				self.updatePrices()
+				self.updateTranslations()#temp run translations twice
 				self.updateProduction()
 				self.updateStructures(corpID)
 				self.updateTranslations()
