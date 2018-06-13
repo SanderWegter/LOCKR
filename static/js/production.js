@@ -8,6 +8,7 @@ multipliers = {}
 function getProduction(){
     $(".productionList").html("")
     $(".partsList").html("")
+    prodParts = {}
     $.getJSON("/internal/production/getProduction", function(data){
         $.each(data.production, function(k,v){
             var inputMaterials = "<table class='table table-bordered'><tr>"
