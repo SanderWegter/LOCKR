@@ -41,7 +41,7 @@ function getProduction(){
                     maxproducablebuild.push(Math.floor((val.stock + val.inbuild) / (val.quantity * data.toProduce[k].quantity)))
                 }
 
-                inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png' title='"+data.translations[key].name+"'><br>"+stockquan+""+producable+"</td>"
+                inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png' data-toggle='tooltip' title='"+data.translations[key].name+"'><br>"+stockquan+""+producable+"</td>"
             })
             
             
@@ -56,13 +56,24 @@ function getProduction(){
         })
         $.each(prodParts, function(k,v){
             $(".partsList").append("<tr>\
-                                        <td><img src='https://image.eveonline.com/Type/"+k+"_32.png' title='"+data.translations[k].name+"'></td>\
+                                        <td><img src='https://image.eveonline.com/Type/"+k+"_32.png' data-toggle='tooltip' title='"+data.translations[k].name+"'></td>\
                                         <td>"+v.stock+"</td>\
                                         <td>"+v.build+"</td>\
                                         <td>"+v.required+"</td>\
                                         <td>"+(v.required - v.build - v.stock)+"</td>\
                                     </tr>")
         })
+        $('[data-toggle="tooltip"]').tooltip(); 
+        $("#partsTable").DataTable({
+            'paging': true,
+            'pageLength': 50,
+            'lengthChange': true,
+            'searching': false,
+            'ordering': true,
+            'order': [[ 4, "desc" ]],
+            'info': true,
+            'autoWidth': true
+		})
         $(":input[id^='dbid']").bind('keyup mouseup', function(){
             selID = (this.id).split("dbid")[1]
             val = $("#dbid"+selID).val()
