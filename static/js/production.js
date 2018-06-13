@@ -17,7 +17,7 @@ function getProduction(){
                     prodParts[key] = {'stock': 0, 'build': 0, 'required': 0}
                 }
                 prodParts[key]["stock"] = val.stock
-                prodParts[key]["build"] = data.toProduce[k].quantity
+                prodParts[key]["build"] = val.inbuild
                 prodParts[key]["required"] += val.quantity * data.toProduce[k].quantity
                 multipliers[data.toProduce[k].dbid] = data.toProduce[k].quantity
                 clr = "green"
@@ -58,6 +58,7 @@ function getProduction(){
                                         <td>"+v.stock+"</td>\
                                         <td>"+v.build+"</td>\
                                         <td>"+v.required+"</td>\
+                                        <td>"+(v.required - v.build - v.stock)+"</td>\
                                     </tr>")
         })
         $(":input[id^='dbid']").bind('keyup mouseup', function(){
