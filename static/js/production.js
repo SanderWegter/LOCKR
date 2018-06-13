@@ -54,7 +54,7 @@ function getProduction(){
         })
         $.each(prodParts, function(k,v){
             $(".partsList").append("<tr>\
-                                        <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'></td>\
+                                        <td><img src='https://image.eveonline.com/Type/"+k+"_32.png' title='"+data.translations[key].name+"'></td>\
                                         <td>"+v.stock+"</td>\
                                         <td>"+v.build+"</td>\
                                         <td>"+v.required+"</td>\
