@@ -64,6 +64,7 @@ function getProduction(){
                                     </tr>")
         })
         $('[data-toggle="tooltip"]').tooltip(); 
+        $("#partsTable").DataTable().destroy()
         $("#partsTable").DataTable({
             'paging': true,
             'pageLength': 50,
