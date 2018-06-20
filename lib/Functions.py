@@ -281,6 +281,7 @@ class Functions:
 			r = get(baseURL+items)
 			marketInfo = r.json()
 			for r in marketInfo:
+				print(r)
 				typeID = r["buy"]["forQuery"]["types"][0]
 				buy = r["buy"]["fivePercent"]
 				sell = r["sell"]["fivePercent"]
