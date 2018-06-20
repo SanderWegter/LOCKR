@@ -554,6 +554,7 @@ class Functions:
 			itemTranslations = {}
 			itemTranslation = self.esi.getESIInfo('post_universe_names', {"ids": tempTrans})
 			for i in itemTranslation:
+				print(i)
 				itemTranslations[i["id"]] = {"name": i["name"]}
 
 		prodBP = ()
