@@ -565,6 +565,8 @@ class Functions:
 			self.toProduce[bpItemID["inventory_type"][0]] = {'quantity': self.toProduce[p], 'dbid': p}
 
 		format_strings = ','.join(['%s'] * len(prodBP))
+		print(format_strings)
+		print(prodBP)
 		cur = self.db.query("SELECT typeID,materialTypeID, quantity FROM `industryActivityMaterials` WHERE `typeID` IN (%s) AND activityID = 1" % format_strings, prodBP)
 		prodMats = {}
 		for r in cur.fetchall():
