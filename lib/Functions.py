@@ -635,6 +635,7 @@ class Functions:
 			#corpID = self.getCorpID()
 			charInfo = self.esi.getESIInfo('get_characters_character_id',{"character_id": charID})
 			corpID = charInfo["corporation_id"]
+			print(baseroles)
 			if "Director" in baseroles:
 				self.updateIndustryJobs(corpID)
 				self.updateBps(corpID)
