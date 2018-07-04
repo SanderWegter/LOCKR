@@ -92,7 +92,7 @@ class Functions:
                     "translations": translations,
                     "assetnames": assets[1]
                 }
-
+                print(a['jobs'])
                 for i in a:
                     cur = self.db.query("DELETE FROM autoupdate WHERE type = %s",[i])
                     cur = self.db.query("INSERT INTO autoupdate (`type`,`json`) VALUES (%s,%s)",[i,a[i]])
@@ -105,7 +105,6 @@ class Functions:
                 # updateContracts(corpID)
                 production = self.updateProduction()
                 translations = self.updateTranslations()
-                print(jobs)
                 a = {
                     "jobs": jobs, 
                     "bps": {}, 
