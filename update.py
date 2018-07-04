@@ -407,6 +407,7 @@ class Functions:
         prodBP = ()
         for p in prods:
             bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
+            print(bpItemID)
             prodBP = prodBP + (bpItemID["inventory_type"][0],)
             self.toProduce[bpItemID["inventory_type"][0]] = {'quantity': self.toProduce[p], 'dbid': p}
 
