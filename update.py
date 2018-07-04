@@ -413,8 +413,8 @@ class Functions:
             bpItemID = self.esi.getESIInfo('post_universe_ids', {"names": [itemTranslations[p]["name"]+" Blueprint"]})
             print(itemTranslations[p]["name"]+" Blueprint")
             print(bpItemID)
-            prodBP = prodBP + (bpItemID["inventory_type"][id],)
-            self.toProduce[bpItemID["inventory_type"][0]] = {'quantity': self.toProduce[p], 'dbid': p}
+            prodBP = prodBP + (bpItemID["inventory_type"]["id"],)
+            self.toProduce[bpItemID["inventory_type"]["id"]] = {'quantity': self.toProduce[p], 'dbid': p}
 
         format_strings = ','.join(['%s'] * len(prodBP))
         print(format_strings)
