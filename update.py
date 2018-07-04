@@ -407,7 +407,7 @@ class Functions:
         prodBP = ()
         for p in prods:
             #bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
-            bpItemID = self.esi.getESIInfo('post_universe_ids', "names": [itemTranslations[p]["name"]+" Blueprint"])
+            bpItemID = self.esi.getESIInfo('post_universe_ids', {"names": [itemTranslations[p]["name"]+" Blueprint"]})
             print(itemTranslations[p]["name"]+" Blueprint")
             print(bpItemID)
             prodBP = prodBP + (bpItemID["inventory_type"][id],)
