@@ -10,10 +10,10 @@ import time
 def requires_auth(f):
 	@wraps(f)
 	def decorated_auth(*args, **kwargs):
-		print("Will be called",functions.lastUpdate,functions.isRefreshing)
-		if threading.activeCount() <= 2 and not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
-			t = threading.Thread(target=functions.updateAllData)
-			t.start()
+		#print("Will be called",functions.lastUpdate,functions.isRefreshing)
+		#if threading.activeCount() <= 2 and not functions.isRefreshing and int(time.time() - functions.lastUpdate) > 600:
+		#	t = threading.Thread(target=functions.updateAllData)
+		#	t.start()
 			#functions.updateAllData()
 		if not functions.isLoggedIn():
 			return redirect(url_for('page_routes.login', secure_uri=functions.getAuthURI()))

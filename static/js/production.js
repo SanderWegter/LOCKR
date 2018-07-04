@@ -10,6 +10,7 @@ function getProduction(){
     $(".partsList").html("")
     prodParts = {}
     $.getJSON("/internal/production/getProduction", function(data){
+        console.log(data)
         $.each(data.production, function(k,v){
             var inputMaterials = "<table class='table table-bordered'><tr>"
             maxproducable = []
