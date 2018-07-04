@@ -95,7 +95,7 @@ class Functions:
                 print(a['jobs'])
                 for i in a:
                     cur = self.db.query("DELETE FROM autoupdate WHERE type = %s",[i])
-                    cur = self.db.query("INSERT INTO autoupdate (`type`,`json`) VALUES (%s,%s)",[i,a[i]])
+                    cur = self.db.query("INSERT INTO autoupdate (`type`,`json`) VALUES (%s,%s)",[i,json.dumps(a[i])])
 
                 break
             if "Factory_Manager" in baseroles and self.config.getConfig()["server"]["debug"]:
