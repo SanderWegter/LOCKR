@@ -98,6 +98,8 @@ class Functions:
                     cur = self.db.query("INSERT INTO autoupdate (`type`,`json`) VALUES (%s,%s)",[i,json.dumps(a[i])])
                 with open('tempstore/translations.json','w') as f:
                     f.write(json.dumps(translations))
+                with open('tempstore/bps.json','w') as f:
+                    f.write(json.dumps(bps))
                 break
             if "Factory_Manager" in baseroles and self.config.getConfig()["server"]["debug"]:
                 jobs = self.updateIndustryJobs(corpID)
@@ -126,6 +128,8 @@ class Functions:
                     cur = self.db.query("INSERT INTO autoupdate (`type`,`json`) VALUES (%s,%s)",[i,json.dumps(a[i])])
                 with open('tempstore/translations.json','w') as f:
                     f.write(json.dumps(translations))
+                with open('tempstore/bps.json','w') as f:
+                    f.write(json.dumps(bps))
             print("Finished update")
             self.isRefreshing = False
             self.lastUpdate = int(time.time())

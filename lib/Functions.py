@@ -243,16 +243,12 @@ class Functions:
 		else:
 			jobs = []
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["bps"])
-		r = cur.fetchone()
-		if r:
-			bps = r[0]
-		else:
-			bps = []
+		with open('tempstore/bps.json') as f:
+			bps = json.load(f)
 
 		with open('tempstore/translations.json') as f:
 			trans = json.load(f)
-		return {"jobs": json.loads(jobs), "translations": trans, "bps": json.loads(bps)}
+		return {"jobs": json.loads(jobs), "translations": trans, "bps": bps}
 
 	def getCorpAssets(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["assets"])
