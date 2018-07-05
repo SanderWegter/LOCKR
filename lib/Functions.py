@@ -277,7 +277,13 @@ class Functions:
 
 		with open('tempstore/translations.json') as f:
 			trans = json.load(f)
-		return {"assets": json.dumps(assets), "translations": trans, "divisions": json.loads(divisions), "assetnamelist": json.loads(assetsnames), "officeFlags": json.loads(flags)}
+		return {
+			"assets": json.dumps(assets), 
+			"translations": trans, 
+			"divisions": json.loads(divisions), 
+			"assetnamelist": json.loads(assetsnames), 
+			"officeFlags": json.loads(flags)
+		}
 
 	def getMarketItems(self):
 		results = []
