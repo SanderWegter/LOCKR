@@ -252,7 +252,7 @@ class Functions:
 
 	def getCorpAssets(self):
 		with open('tempstore/assets.json') as f:
-			assets = json.loads(f)
+			assets = json.load(f)
 
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["divisions"])
 		r = cur.fetchone()
@@ -277,7 +277,7 @@ class Functions:
 
 		with open('tempstore/translations.json') as f:
 			trans = json.load(f)
-		return {"assets": assets, "translations": trans, "divisions": json.loads(divisions), "assetnamelist": json.loads(assetsnames), "officeFlags": json.loads(flags)}
+		return {"assets": json.dumps(assets), "translations": trans, "divisions": json.loads(divisions), "assetnamelist": json.loads(assetsnames), "officeFlags": json.loads(flags)}
 
 	def getMarketItems(self):
 		results = []
