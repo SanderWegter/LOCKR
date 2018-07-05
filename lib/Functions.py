@@ -278,7 +278,7 @@ class Functions:
 		with open('tempstore/translations.json') as f:
 			trans = json.load(f)
 		return {
-			"assets": json.dumps(assets), 
+			"assets": assets, 
 			"translations": trans, 
 			"divisions": json.loads(divisions), 
 			"assetnamelist": json.loads(assetsnames), 
