@@ -268,7 +268,7 @@ class Functions:
 		else:
 			flags = []
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["assetsnames"])
+		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["assetnames"])
 		r = cur.fetchone()
 		if r:
 			assetsnames = r[0]
