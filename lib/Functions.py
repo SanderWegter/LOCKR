@@ -250,13 +250,9 @@ class Functions:
 		else:
 			bps = []
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = []
-		return {"jobs": json.loads(jobs), "translations": json.loads(trans), "bps": json.loads(bps)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"jobs": json.loads(jobs), "translations": jtrans, "bps": json.loads(bps)}
 
 	def getCorpAssets(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["assets"])
@@ -287,13 +283,9 @@ class Functions:
 		else:
 			assetsnames = []
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = r[1]
-		return {"assets": json.loads(assets), "translations": json.loads(trans), "divisions": json.loads(divisions), "assetnamelist": json.loads(assetsnames), "officeFlags": json.loads(flags)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"assets": json.loads(assets), "translations": trans, "divisions": json.loads(divisions), "assetnamelist": json.loads(assetsnames), "officeFlags": json.loads(flags)}
 
 	def getMarketItems(self):
 		results = []
@@ -317,13 +309,9 @@ class Functions:
 		else:
 			items = {}
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = r[1]
-		return {"items": json.loads(items), "translations": json.loads(trans)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"items": json.loads(items), "translations": trans}
 
 	def delMarketItem(self, itemID):
 		self.db.query("DELETE FROM priceLookup WHERE typeID = %s",[itemID])
@@ -337,13 +325,9 @@ class Functions:
 		else:
 			contracts = {}
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = r[1]
-		return {"contracts": json.loads(contracts), "translations": json.loads(trans)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"contracts": json.loads(contracts), "translations": trans}
 	
 	def getMoonMining(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["moon"])
@@ -353,13 +337,9 @@ class Functions:
 		else:
 			mining = {}
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = r[1]
-		return {"mining": json.loads(mining), "translations": json.loads(trans)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"mining": json.loads(mining), "translations": trans}
 
 	def getProduction(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["production"])
@@ -376,13 +356,9 @@ class Functions:
 		else:
 			toproduce = {}
 
-		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["translations"])
-		r = cur.fetchone()
-		if r:
-			trans = r[0]
-		else:
-			trans = r[1]
-		return {"production": json.loads(prod), "translations": json.loads(trans), "toProduce": json.loads(toproduce)}
+		with open('tempstore/translations.json') as f:
+			trans = json.load(f)
+		return {"production": json.loads(prod), "translations": trans, "toProduce": json.loads(toproduce)}
 
 	def getStructures(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["structures"])
