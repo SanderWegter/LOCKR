@@ -252,7 +252,7 @@ class Functions:
 
 	def getCorpAssets(self):
 		with open('tempstore/assets.json') as f:
-			assets = json.load(f)
+			assets = json.loads(f)
 
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["divisions"])
 		r = cur.fetchone()
