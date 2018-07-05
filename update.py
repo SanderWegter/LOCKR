@@ -100,6 +100,8 @@ class Functions:
                     f.write(json.dumps(translations))
                 with open('tempstore/bps.json','w') as f:
                     f.write(json.dumps(bps))
+                with open('tempstore/assets.json', 'w') as f:
+                    f.write(json.dumps(assets[0]))
                 break
             if "Factory_Manager" in baseroles and self.config.getConfig()["server"]["debug"]:
                 jobs = self.updateIndustryJobs(corpID)
