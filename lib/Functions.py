@@ -252,7 +252,7 @@ class Functions:
 
 		with open('tempstore/translations.json') as f:
 			trans = json.load(f)
-		return {"jobs": json.loads(jobs), "translations": jtrans, "bps": json.loads(bps)}
+		return {"jobs": json.loads(jobs), "translations": trans, "bps": json.loads(bps)}
 
 	def getCorpAssets(self):
 		cur = self.db.query("SELECT json FROM autoupdate WHERE type = %s",["assets"])
