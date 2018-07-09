@@ -10,6 +10,6 @@ function getRefresh(){
     })
 }
 $(document).ready(function(){
-    getRefresh()
-    setInterval(function(){getRefresh()}, 5000)
+    //getRefresh()
+    //#setInterval(function(){getRefresh()}, 5000)
 })

@@ -13,7 +13,7 @@ class Functions:
 		self.db = Database()
 		self.esi = ESI()
 		self.config = Config()
-		self.admins = self.config.getConfig()["settings"]["admins"]
+		#self.admins = self.config.getConfig()["settings"]["admins"]
 		self.lastUpdate = 0
 		self.isRefreshing = False
 		self.corpCache = 0
@@ -82,10 +82,10 @@ class Functions:
 			if cur.fetchone()[0] == 0:
 				cur = self.db.query("""
 										INSERT INTO users
-											(`charID`, `charName`, `ip`)
+											(`charID`, `charName`, `ip`, `groupName`)
 										VALUES
-											(%s, %s, %s)	
-				""",[session["char"]["CharacterID"], session["char"]["CharacterName"], request.remote_addr])
+											(%s, %s, %s, %s)	
+				""",[session["char"]["CharacterID"], session["char"]["CharacterName"], request.remote_addr, "Unknowns"])
 
 			return r
 
@@ -93,12 +93,20 @@ class Functions:
 		if not "token" in session:
 			return False
 		session["isAdmin"] = False
+		session["isMember"] = False
 		if "char" in session:
 			self.db.query("UPDATE users SET ip=%s, lastActive = NOW(), refreshToken = %s WHERE charID = %s",[request.remote_addr,session["token"]["refresh_token"],session["char"]["CharacterID"]])
 			try:
 				session["corpID"] = self.getCorpID()
-				if session["char"]["CharacterID"] in self.admins:
+				cur = self.db.query("SELECT groupName FROM users WHERE charID = %s",[session["char"]["CharacterID"]])
+				grName = cur.fetchone()[0]
+				if grName == "Leaders":
 					session["isAdmin"] = True
+					session["isMember"] = True
+				if grName == "Members":
+					session["isMember"] = True
+				#if session["char"]["CharacterID"] in self.admins:
+				#	session["isAdmin"] = True
 			except:
 				return False
 		return self.esi.isVerified(session["token"])
@@ -109,6 +117,31 @@ class Functions:
 
 	def isAdmin(self):
 		return session["isAdmin"]
+
+	def isMember(self):
+		return session["isMember"]
+
+	def getCharacters(self):
+		users = []
+		cur = self.db.query("SELECT charID, charName, groupName, UNIX_TIMESTAMP(lastActive) FROM users")
+		for r in cur.fetchall():
+			charID,charName,groupName,lastActive = r
+			users.append({
+				"charID": charID,
+				"charName": charName,
+				"groupName": groupName,
+				"lastActive": int(lastActive)*1000
+			})
+		return users
+
+	def editCharacter(self, form):
+		charID = form["charID"]
+		group = form["group"]
+
+		if charID is not None and group is not None:
+			self.db.query("UPDATE users SET groupName = %s WHERE charID = %s",[group,charID])
+	
+		return {}
 
 	def getCharID(self):
 		char = self.esi.getESIChar(session["token"])

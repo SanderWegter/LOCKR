@@ -28,6 +28,14 @@ def requires_admin(f):
 		return f(*args, **kwargs)
 	return decorated_admin
 
+def requires_member(f):
+	@wraps(f)
+	def decorated_member(*args, **kwargs):
+		if not functions.isMember():
+			return json.dumps({"error": "Unauthorized"}),401
+		return f(*args, **kwargs)
+	return decorated_member
+
 internal_routes = Blueprint('internal_routes', __name__, template_folder='templates')
 functions = Functions()
 db = Database()
@@ -47,8 +55,24 @@ def getMarketInfo():
 def getSysID():
 	return json.dumps(functions.getCharSysLocID())
 
+@internal_routes.route("/internal/character/getCharacters")
+@requires_auth
+@requires_admin
+def getCharactes():
+	return json.dumps(functions.getCharacters())
+
+@internal_routes.route("/internal/character/editCharacter", methods=["POST"])
+@requires_auth
+@requires_admin
+def editCharacter():
+	print(request.form)
+	res = functions.editCharacter(request.form)
+	return redirect(url_for("page_routes.admin"))
+	#return json.dumps()
+
 @internal_routes.route("/internal/industry/getAllJobs")
 @requires_auth
+@requires_member
 def getIndustryJobs():
 	return json.dumps(functions.getIndustryJobs())
 
@@ -65,11 +89,13 @@ def getMarketItems():
 
 @internal_routes.route("/internal/market/getPricingInfo")
 @requires_auth
+@requires_member
 def getPricingInfo():
 	return json.dumps(functions.getPricingInfo())
 
 @internal_routes.route("/internal/market/postMarketItems",methods=["POST"])
 @requires_auth
+@requires_admin
 def postMarketItems():
 	return json.dumps(functions.postMarketItems())
 
@@ -83,15 +109,18 @@ def delMarketItem(itemID):
 @requires_auth
 @requires_admin
 def updatePrice():
-	return json.dumps(functions.updatePrice())
+	return
+	#return json.dumps(functions.updatePrice())
 
 @internal_routes.route("/internal/mining/getMoonMining")
 @requires_auth
+@requires_member
 def getMoonMining():
 	return json.dumps(functions.getMoonMining())
 
 @internal_routes.route("/internal/production/getProduction")
 @requires_auth
+@requires_member
 def getProduction():
 	return json.dumps(functions.getProduction())
 
@@ -103,11 +132,13 @@ def setTarget(selID, val):
 
 @internal_routes.route("/internal/structures/getStructures")
 @requires_auth
+@requires_member
 def getStructures():
 	return json.dumps(functions.getStructures())
 
 @internal_routes.route("/internal/contracts/getContracts")
 @requires_auth
+@requires_admin
 def getContracts():
 	return json.dumps(functions.getContracts())
 
