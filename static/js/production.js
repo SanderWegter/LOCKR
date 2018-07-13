@@ -57,7 +57,7 @@ function getProduction(){
             $(".productionList").append("\
                                             <tr>\
                                             <td><input type='number' min=0 value='"+data.toProduce[k].quantity+"' id='dbid"+data.toProduce[k].dbid+"'></td>\
-                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"++"<br>"+Math.min(...maxproducable)+"("+Math.min(...maxproducablebuild)+")</td>\
+                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"+data.translations[k].name+"<br>"+Math.min(...maxproducable)+"("+Math.min(...maxproducablebuild)+")</td>\
                                             <td>"+inputMaterials+"</td>\
                                             </tr>\
             ")
