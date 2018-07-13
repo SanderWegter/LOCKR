@@ -354,7 +354,7 @@ class Functions:
 
         for p in self.prices:
             bpItemID = self.esi.getESIInfo('post_universe_ids', {"names": [itemTranslations[p]["name"]+" Blueprint"]})
-
+            print(bpItemID)
 
             #bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
             cur = self.db.query("SELECT COUNT(*) FROM itemLookup WHERE idnum = %s",[bpItemID["inventory_types"][0]["id"]])
