@@ -353,12 +353,15 @@ class Functions:
             itemTranslations[i["id"]] = {"name": i["name"]}
 
         for p in self.prices:
-            bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
-            cur = self.db.query("SELECT COUNT(*) FROM itemLookup WHERE idnum = %s",[bpItemID["inventory_type"]])
+            bpItemID = self.esi.getESIInfo('post_universe_ids', {"names": [itemTranslations[p]["name"]+" Blueprint"]})
+
+
+            #bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
+            cur = self.db.query("SELECT COUNT(*) FROM itemLookup WHERE idnum = %s",[bpItemID["inventory_types"][0]["id"]])
             if cur.fetchone() == 0:
-                cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[bpItemID["inventory_type"],itemTranslations[p]["name"]+" Blueprint","Blueprints"])
+                cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[bpItemID["inventory_types"][0]["id"],itemTranslations[p]["name"]+" Blueprint","Blueprints"])
             try:
-                bpID = bpItemID["inventory_type"]
+                bpID = bpItemID["inventory_types"][0]["id"]
                 cur = self.db.query("SELECT materialTypeID, quantity FROM industryActivityMaterials WHERE activityID = %s AND typeID = %s",[1,bpID])
                 res = cur.fetchall()
                 if len(res)>0:
