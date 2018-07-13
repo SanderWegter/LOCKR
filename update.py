@@ -363,7 +363,8 @@ class Functions:
                 if cur.fetchone() == 0:
                     cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[bpItemID["inventory_types"][0]["id"],itemTranslations[p]["name"]+" Blueprint","Blueprints"])
             except:
-                print("No bp? "+itemTranslations[p]["name"]+"- "+bpItemID)
+                print("No bp? "+itemTranslations[p]["name"])
+                print(bpItemID)
                 pass
             try:
                 bpID = bpItemID["inventory_types"][0]["id"]
