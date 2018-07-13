@@ -45,7 +45,8 @@ function getProduction(){
                 inputMaterials += "<td><img src='https://image.eveonline.com/Type/"+key+"_32.png' data-toggle='tooltip' title='"+data.translations[key].name+"'><br>"+stockquan+""+producable+"</td>"
             })
             
-            
+            console.log(k)
+            console.log(data.translations[k])
             inputMaterials += "</tr></table>"
             $(".productionList").append("\
                                             <tr>\
