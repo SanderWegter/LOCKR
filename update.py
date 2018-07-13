@@ -411,7 +411,7 @@ class Functions:
         return {}
 
     def updateProduction(self):
-        cur = self.db.query("SELECT typeID, toBuild FROM priceLookup LEFT JOIN itemLookup I ON I.idnum = typeID WHERE I.name NOT LIKE %s AND marketGroup LIKE %s",["%blueprint%","%Ships >%"])
+        cur = self.db.query("SELECT typeID, toBuild FROM priceLookup LEFT JOIN itemLookup I ON I.idnum = typeID WHERE I.name NOT LIKE %s AND (marketGroup LIKE %s OR marketGroup LIKE %s OR marketGroup Like %s OR marketGroup LIKE %s)",["%blueprint%","%Ships >%","Structures > Ci%","Structures > Ref%","Structures > Engin%"])
         
         prods = ()
         tempTrans = set()
