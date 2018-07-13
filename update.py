@@ -360,7 +360,7 @@ class Functions:
             #bpItemID = self.esi.getESIInfo('get_search',{'strict': 'true', 'search': itemTranslations[p]["name"]+" Blueprint", 'categories': "inventory_type"})
             try:
                 cur = self.db.query("SELECT COUNT(*) FROM itemLookup WHERE idnum = %s",[bpItemID["inventory_types"][0]["id"]])
-                if cur.fetchone() == 0:
+                if cur.fetchone()[0] == 0:
                     cur = self.db.query("INSERT INTO itemLookup (`idnum`,`name`,`marketGroup`) VALUES (%s,%s,%s)",[bpItemID["inventory_types"][0]["id"],itemTranslations[p]["name"]+" Blueprint","Blueprints"])
             except:
                 print("No bp? "+itemTranslations[p]["name"])
