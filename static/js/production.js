@@ -48,10 +48,16 @@ function getProduction(){
             console.log(k)
             console.log(data.translations[k])
             inputMaterials += "</tr></table>"
+            try{
+                n = data.translations[k].name
+            }
+            catch{
+                n = "Unknown"
+            }
             $(".productionList").append("\
                                             <tr>\
                                             <td><input type='number' min=0 value='"+data.toProduce[k].quantity+"' id='dbid"+data.toProduce[k].dbid+"'></td>\
-                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"+data.translations[k].name+"<br>"+Math.min(...maxproducable)+"("+Math.min(...maxproducablebuild)+")</td>\
+                                            <td><img src='https://image.eveonline.com/Type/"+k+"_32.png'><br>"++"<br>"+Math.min(...maxproducable)+"("+Math.min(...maxproducablebuild)+")</td>\
                                             <td>"+inputMaterials+"</td>\
                                             </tr>\
             ")
